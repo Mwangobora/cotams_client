@@ -1,0 +1,479 @@
+COTAMS Frontend Specification (UI/UX + Pages + Role Flows)
+1) Goal of the Frontend
+
+The frontend is a role-based web application for a college timetable system. It must:
+
+Work well on mobile, tablet, laptop, and desktop
+
+Provide a clean, professional UI
+
+Support light/dark theme
+
+Use REST APIs for data
+
+Use WebSockets to receive real-time “timetable updated” events and show in-app notifications
+
+Enforce role-based navigation: users see only what their role allows
+
+2) Tech Stack (Frontend)
+
+React + Vite + TypeScript
+
+Tailwind CSS
+
+shadcn/ui components
+
+Framer Motion for subtle transitions
+
+Axios (with JWT interceptors)
+
+React Router for routing (recommended)
+
+Zustand (optional) for auth/token and UI state (recommended if you already planned it)
+
+3) Design System (Visual Requirements)
+
+Brand / colors
+
+Primary: #0E21A0 (main buttons, links, active states)
+
+Light theme base: white + zinc surfaces (soft, not too strong)
+
+Card background (light): zinc-toned surface
+
+Dark theme background: #30364F with zinc/dark surfaces
+
+Typography: clear hierarchy, good spacing, no clutter
+
+Responsiveness
+
+Mobile-first layout
+
+Sidebar on desktop, drawer navigation on mobile
+
+Buttons and form inputs scale properly (full width on mobile)
+
+Timetable grid switches to “day view” on small screens
+
+4) Global App Layout (Authenticated Area)
+
+After login, the app uses a shared layout shell:
+
+Desktop layout
+
+Left sidebar (fixed): navigation menu with icons
+
+Top bar: page title/breadcrumb + theme toggle + notifications bell + user menu
+
+Main content: responsive container with cards and grids
+
+Mobile layout
+
+Sidebar becomes a hamburger menu drawer
+
+Top bar stays visible
+
+Content becomes single-column stacked layout
+
+Global components
+
+AppShell
+
+Sidebar + MobileDrawer
+
+Topbar
+
+ThemeToggle
+
+NotificationsBell (shows unread count)
+
+UserMenu (profile, logout)
+
+5) Authentication UI (Public Pages)
+Pages:
+
+Login
+
+Email + password form
+
+“Forgot password?” link
+
+On success: store JWT, fetch /me, redirect to role dashboard
+
+Forgot Password
+
+Input: email
+
+Calls reset request endpoint
+
+Shows confirmation message
+
+Reset Password
+
+Token + new password (depending on backend flow)
+
+Submit new password
+
+6) Role-Based Dashboards and Navigation
+
+The sidebar menu must be generated based on permissions/roles returned from the backend (/me endpoint).
+
+A) Admin / Timetable Manager UI
+
+Purpose: approve submissions, manage timetable sessions, manage rooms, view audit logs.
+
+Admin Menu
+
+Dashboard
+
+Timetable (Manage)
+
+Sessions (Create/Edit)
+
+Submissions (Approve/Reject)
+
+Rooms (Resources)
+
+Programs/Streams (Read-only or manage depending on permissions)
+
+Notifications (Send Announcement)
+
+Audit Logs
+
+Profile/Settings
+
+Admin Dashboard widgets
+
+Pending submissions count
+
+Total sessions this week
+
+Recent timetable changes (audit highlights)
+
+Recent clashes detected (optional)
+
+Quick actions: “Create session”, “Review submissions”
+
+B) Department Staff UI
+
+Purpose: create modules, curriculum mappings, module-lecturer assignments; submit to admin.
+
+Staff Menu
+
+Dashboard
+
+Modules
+
+Curriculum
+
+Module-Lecturer Assignments
+
+Submissions (Draft/Submit/Status)
+
+Profile/Settings
+
+Staff Dashboard widgets
+
+Draft submissions
+
+Submitted/approved/rejected status cards
+
+Quick actions: “Create module”, “Create submission”
+
+C) Lecturer UI
+
+Purpose: view own timetable and receive updates.
+
+Lecturer Menu
+
+My Timetable
+
+My Sessions (list)
+
+Notifications
+
+Profile/Settings
+
+Lecturer Dashboard widgets
+
+Next session
+
+Today’s sessions list
+
+Recent updates
+
+D) Student UI
+
+Purpose: view timetable for their stream and receive updates.
+
+Student Menu
+
+Timetable
+
+Sessions list (optional)
+
+Notifications
+
+Profile/Settings
+
+Student Dashboard widgets
+
+Next session
+
+Today’s sessions list
+
+“Timetable updated” alerts
+
+7) Timetable Page (Main UI Feature)
+
+The Timetable page is different by screen size and role.
+
+Desktop Timetable View (weekly grid)
+
+Layout:
+
+Main area: Weekly grid (Mon–Fri or Mon–Sun)
+
+Side area: Filters + summary
+
+Grid design:
+
+Columns = days
+
+Rows = time range (07:00 to 21:00)
+
+Each session is displayed as a card block spanning its time
+
+Session card shows:
+
+module code (bold)
+
+room code
+
+time range
+
+optional lecturer name
+
+Clicking a session opens:
+
+a modal or side panel with full details
+
+Filters (right side)
+
+Academic year + semester
+
+Stream (admin can switch)
+
+Lecturer (admin filter)
+
+Room (admin filter)
+
+Mobile Timetable View (day-based)
+
+On small screens, the weekly grid is hard to read, so show:
+
+A day selector (tabs or dropdown)
+
+A list of sessions for that day as cards
+
+Each card shows same details, click to open modal
+
+8) Session Management (Admin Only)
+Admin “Create/Edit Session” page
+
+This page is where the “real-time clash detection” is visible.
+
+Form fields
+
+Stream
+
+Module
+
+Lecturer
+
+Room
+
+Day of week
+
+Start time
+
+End time
+
+Academic year + semester
+
+UX behavior
+
+On “Save session”:
+
+call REST create endpoint
+
+if clash: show detailed clash panel (do not save)
+
+if success: show toast “Session saved” and return to timetable
+
+Clash display
+
+Show an error card explaining:
+
+conflict type (room / lecturer / stream)
+
+conflicting session details (time + module + room)
+
+Optional: highlight the conflicting slot on timetable preview
+
+9) Submissions Workflow UI (Staff → Admin)
+Staff Submission Pages
+
+Create a draft submission
+
+Add modules/curriculum/assignments to submission
+
+Submit to admin
+
+View status:
+
+Draft
+
+Submitted
+
+Approved
+
+Rejected (with admin notes)
+
+Admin Review Pages
+
+List submissions with status filter
+
+Click to view details
+
+Approve or reject with comments
+
+Approved submissions become available for scheduling
+
+10) Notifications UI (All Roles)
+
+Two parts:
+
+A) Real-time toast alerts
+
+When a WebSocket event is received:
+
+Show toast: “Timetable updated”
+
+Update unread notification count
+
+If user is currently on timetable page:
+
+auto-refresh via REST or show “Refresh” button
+
+B) Notifications Inbox Page
+
+List notifications from the Notification table (REST)
+
+Mark read / mark all read
+
+Each notification shows:
+
+title/message
+
+timestamp
+
+optional “View timetable” action
+
+Important rule
+WebSocket only delivers the event. The frontend should fetch the latest timetable using REST to stay consistent.
+
+11) Audit Logs UI (Admin Only)
+
+Audit logs must be visible to admin:
+
+Table list:
+
+time
+
+actor user
+
+action (create/update/delete)
+
+entity (session id)
+
+Details view shows:
+
+before vs after changes (readable JSON)
+This is for accountability (“who changed the timetable?”).
+
+12) Data Fetching Rules (Frontend)
+
+Use Axios instance with base URL from .env (VITE_API_BASE_URL)
+
+Attach JWT access token to requests
+
+Use /me endpoint on startup to load:
+
+user identity
+
+roles
+
+permission codes (optional)
+
+Use role-based rendering:
+
+hide admin-only pages if not allowed
+
+On WebSocket event:
+
+show toast
+
+refresh relevant data via REST
+
+13) Pages List (Complete)
+
+Public
+
+/login
+
+/forgot-password
+
+/reset-password
+
+Authenticated
+
+/dashboard (role-based)
+
+/timetable (student/lecturer view; admin manages)
+
+/sessions (admin manage)
+
+/submissions (staff submit; admin review)
+
+/modules (staff)
+
+/curriculum (staff)
+
+/module-lecturers (staff)
+
+/rooms (admin)
+
+/notifications (all)
+
+/audit (admin)
+
+/profile (all)
+
+14) Implementation Sequence (Recommended)
+
+AppShell + routing + theme system
+
+Auth pages + token handling + /me
+
+Role-based sidebar/menu
+
+Timetable view (read-only first)
+
+Admin session creation/edit + clash display
+
+Notifications (WebSocket + inbox)
+
+Submissions pages (staff/admin)
+
+Audit logs page (admin)
