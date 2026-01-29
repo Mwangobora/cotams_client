@@ -1,7 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { NavSection } from '@/config/navigation';
+import { type NavSection } from '@/config/navigation';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { GraduationCap } from 'lucide-react';

@@ -8,11 +8,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MobileSidebar } from './mobile-sidebar';
-import { NavGroup } from '@/config/navigation.config';
+import { type NavGroup } from '@/config/navigation.config';
 import { useAuthStore } from '@/store/auth.store';
 import { Link } from 'react-router-dom';
 
@@ -23,11 +22,6 @@ interface TopbarProps {
 export function Topbar({ navigation }: TopbarProps) {
   const { user, logout } = useAuthStore();
   const unreadNotifications = 0; // TODO: Get from notifications store
-
-  const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return 'U';
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,12 +41,12 @@ export function Topbar({ navigation }: TopbarProps) {
           <Button variant="outline" size="icon" className="relative" asChild>
             <Link to="/notifications">
               <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
+              {unreadNotifications > 0 && (
                 <Badge
                   variant="destructive"
                   className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs"
                 >
-                  {unreadCount > 9 ? '9+' : unreadCount}
+                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
                 </Badge>
               )}
               <span className="sr-only">Notifications</span>
@@ -70,9 +64,9 @@ export function Topbar({ navigation }: TopbarProps) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.full_name}</p>
+                  <p className="text-sm font-medium leading-none">{user?.full_name}</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
+                    {user?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
@@ -90,7 +84,7 @@ export function Topbar({ navigation }: TopbarProps) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem className="text-destructive" onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </DropdownMenuItem>

@@ -9,7 +9,7 @@ import {
   FileText,
   Settings,
   LayoutDashboard,
-  LucideIcon,
+  type LucideIcon,
   GraduationCap,
   UserCheck,
   Send

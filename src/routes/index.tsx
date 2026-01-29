@@ -1,0 +1,90 @@
+/**
+ * Main Application Router
+ * Handles all route definitions and protection
+ */
+
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AppShell } from '@/components/layout/app-shell';
+import { ProtectedRoute } from './ProtectedRoute';
+import { authRoutes } from './auth.routes';
+import { AdminDashboard } from '@/pages/dashboards/AdminDashboard';
+import { StaffDashboard } from '@/pages/dashboards/StaffDashboard';
+import { LecturerDashboard } from '@/pages/dashboards/LecturerDashboard';
+import { StudentDashboard } from '@/pages/dashboards/StudentDashboard';
+
+export function AppRouter() {
+  return (
+    <Routes>
+      {/* Public routes */}
+      {authRoutes}
+
+      {/* Protected routes with role-based access */}
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AppShell>
+              <Routes>
+                <Route index element={<AdminDashboard />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
+              </Routes>
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/staff/*"
+        element={
+          <ProtectedRoute allowedRoles={['STAFF']}>
+            <AppShell>
+              <Routes>
+                <Route index element={<StaffDashboard />} />
+                <Route path="*" element={<Navigate to="/staff" replace />} />
+              </Routes>
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/lecturer/*"
+        element={
+          <ProtectedRoute allowedRoles={['LECTURER']}>
+            <AppShell>
+              <Routes>
+                <Route index element={<LecturerDashboard />} />
+                <Route path="*" element={<Navigate to="/lecturer" replace />} />
+              </Routes>
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/student/*"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <AppShell>
+              <Routes>
+                <Route index element={<StudentDashboard />} />
+                <Route path="*" element={<Navigate to="/student" replace />} />
+              </Routes>
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fallback routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Navigate to="/student" replace />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+}

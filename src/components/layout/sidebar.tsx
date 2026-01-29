@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { NavGroup } from '@/config/navigation.config';
+import { type NavGroup } from '@/config/navigation.config';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { GraduationCap } from 'lucide-react';
