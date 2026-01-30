@@ -98,8 +98,12 @@ export function useRegisterStaffMutation() {
       }
       navigate('/login');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Registration failed');
+    onError: (error: ApiError) => {
+      // Show first field error or general message
+      const message = error.details?.[0]
+        ? `${error.details[0].field}: ${error.details[0].message}`
+        : error.message || 'Registration failed';
+      toast.error(message);
     },
   });
 }

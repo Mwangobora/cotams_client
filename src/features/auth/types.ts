@@ -46,8 +46,11 @@ export interface RegisterStaffRequest {
   password_confirm: string;
   first_name: string;
   last_name: string;
-  staff_code?: string;
-  secret_key?: string; // For staff registration verification
+  employee_id: string;
+  department?: string;
+  title?: string;
+  office_location?: string;
+  phone_number?: string;
 }
 
 export interface RegisterResponse {

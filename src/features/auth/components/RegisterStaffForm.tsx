@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRegisterStaffMutation } from '../mutations';
 import { validateRegisterForm } from '../validators';
+import { ApiError } from '../errors';
 import { AlertCircle, Loader2, Info } from 'lucide-react';
 
 export function RegisterStaffForm() {
@@ -19,8 +20,9 @@ export function RegisterStaffForm() {
     password_confirm: '',
     first_name: '',
     last_name: '',
-    staff_code: '',
-    secret_key: '',
+    employee_id: '',
+    title: '',
+    phone_number: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -42,6 +44,11 @@ export function RegisterStaffForm() {
       formData.last_name
     );
 
+    if (!formData.employee_id.trim()) {
+      validation.isValid = false;
+      validation.errors.employee_id = 'Employee ID is required';
+    }
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
@@ -49,6 +56,8 @@ export function RegisterStaffForm() {
 
     registerMutation.mutate(formData);
   };
+
+  const apiError = registerMutation.error as ApiError | null;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,10 +68,16 @@ export function RegisterStaffForm() {
         </AlertDescription>
       </Alert>
 
-      {registerMutation.isError && (
+      {registerMutation.isError && apiError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{registerMutation.error.message}</AlertDescription>
+          <AlertDescription>
+            {apiError.details?.length
+              ? apiError.details.map((d, i) => (
+                  <div key={i}>{d.field ? `${d.field}: ${d.message}` : d.message}</div>
+                ))
+              : apiError.message}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -107,24 +122,41 @@ export function RegisterStaffForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="staff_code">Staff Code (Optional)</Label>
+        <Label htmlFor="employee_id">Employee ID</Label>
         <Input
-          id="staff_code"
-          value={formData.staff_code}
-          onChange={handleChange('staff_code')}
+          id="employee_id"
+          placeholder="e.g., EMP001"
+          value={formData.employee_id}
+          onChange={handleChange('employee_id')}
           disabled={registerMutation.isPending}
         />
+        {errors.employee_id && (
+          <p className="text-sm text-destructive">{errors.employee_id}</p>
+        )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="secret_key">Registration Key (Optional)</Label>
-        <Input
-          id="secret_key"
-          type="password"
-          value={formData.secret_key}
-          onChange={handleChange('secret_key')}
-          disabled={registerMutation.isPending}
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Title (Optional)</Label>
+          <Input
+            id="title"
+            placeholder="e.g., Manager"
+            value={formData.title}
+            onChange={handleChange('title')}
+            disabled={registerMutation.isPending}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone_number">Phone (Optional)</Label>
+          <Input
+            id="phone_number"
+            placeholder="e.g., +255..."
+            value={formData.phone_number}
+            onChange={handleChange('phone_number')}
+            disabled={registerMutation.isPending}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
