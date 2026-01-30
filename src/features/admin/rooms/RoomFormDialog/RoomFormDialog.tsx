@@ -68,7 +68,6 @@ export function RoomFormDialog({
     is_active: true
   });
   
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const api = new RoomsApi();
 
@@ -78,18 +77,15 @@ export function RoomFormDialog({
         ? api.updateRoom(room.id, data)
         : api.createRoom(data),
     onSuccess: () => {
-      toast({ 
-        title: room ? 'Room updated' : 'Room created',
-        description: 'Changes saved successfully'
+      toast.success(room ? 'Room updated' : 'Room created', {
+        description: 'Changes saved successfully',
       });
       queryClient.invalidateQueries({ queryKey: ['rooms'] });
       onOpenChange(false);
     },
     onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive'
+      toast.error('Error', {
+        description: error?.message ?? 'Something went wrong',
       });
     }
   });

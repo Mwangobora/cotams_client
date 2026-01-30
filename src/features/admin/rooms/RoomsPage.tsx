@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { RoomsApi } from '@/apis/RoomsApi';
 import { type Room } from '@/types/rooms';
-import { RoomFormDialog } from './RoomFormDialog';
+import { RoomFormDialog } from './RoomFormDialog/RoomFormDialog';
 
 export function RoomsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);

@@ -19,7 +19,6 @@ import type {
   ChangePasswordResponse,
   MeResponse,
 } from '@/features/auth/types';
-
 export class AuthApi {
   private basePath = '/auth';
 

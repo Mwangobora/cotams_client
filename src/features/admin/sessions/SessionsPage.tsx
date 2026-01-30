@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { SessionsApi } from '@/apis/SessionsApi';
 import type { Session } from '@/types/sessions';
-import { SessionFormDialog } from './SessionFormDialog';
+import { SessionFormDialog } from './SessionFormDialog/SessionFormDialog';
 
 export function SessionsPage() {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);

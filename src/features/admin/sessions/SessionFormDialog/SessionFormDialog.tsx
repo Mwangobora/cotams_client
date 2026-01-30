@@ -1,7 +1,3 @@
-/**
- * Session Form Dialog Component
- */
-
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import {

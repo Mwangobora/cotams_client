@@ -31,5 +31,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "@/components/ui/alert-dialog.tsx", "@/components/ui/button.tsx", "@/components/ui/checkbox.tsx"]
 }

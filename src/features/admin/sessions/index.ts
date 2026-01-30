@@ -3,4 +3,4 @@
  */
 
 export { SessionsPage } from './SessionsPage';
-export { SessionFormDialog } from './SessionFormDialog';
+export { SessionFormDialog } from './SessionFormDialog/SessionFormDialog';

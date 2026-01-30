@@ -3,4 +3,4 @@
  */
 
 export { RoomsPage } from './RoomsPage';
-export { RoomFormDialog } from './RoomFormDialog';
+export { RoomFormDialog } from './RoomFormDialog/RoomFormDialog';
