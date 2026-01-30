@@ -3,6 +3,7 @@ import { type NavGroup } from '@/config/navigation.config';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { GraduationCap } from 'lucide-react';
+import { useAuthStore } from '@/store/auth.store';
 
 interface SidebarProps {
   navigation: NavGroup[];
@@ -11,12 +12,22 @@ interface SidebarProps {
 
 export function Sidebar({ navigation, className }: SidebarProps) {
   const location = useLocation();
+  const { user } = useAuthStore();
+  
+  // Get dashboard path based on user role
+  const roles = user?.roles?.map(r => r.code) || [];
+  const getDashboardPath = () => {
+    if (roles.includes('ADMIN')) return '/admin';
+    if (roles.includes('STAFF')) return '/staff';
+    if (roles.includes('LECTURER')) return '/lecturer';
+    return '/student';
+  };
 
   return (
     <div className={cn('flex h-full flex-col border-r bg-card', className)}>
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link to="/dashboard" className="flex items-center gap-2 font-semibold">
+        <Link to={getDashboardPath()} className="flex items-center gap-2 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" />
           </div>

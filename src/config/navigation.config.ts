@@ -12,7 +12,8 @@ import {
   type LucideIcon,
   GraduationCap,
   UserCheck,
-  Send
+  Send,
+  User
 } from 'lucide-react';
 
 export interface NavItem {
@@ -29,8 +30,19 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-// Admin Navigation
-export const adminNavigation: NavGroup[] = [
+// Helper to prefix routes with role base path
+function prefixRoutes(groups: NavGroup[], prefix: string): NavGroup[] {
+  return groups.map(group => ({
+    ...group,
+    items: group.items.map(item => ({
+      ...item,
+      href: `${prefix}${item.href === '/dashboard' ? '' : item.href}`,
+    })),
+  }));
+}
+
+// Admin Navigation (will be prefixed with /admin)
+const adminNavItems: NavGroup[] = [
   {
     items: [
       { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -54,19 +66,21 @@ export const adminNavigation: NavGroup[] = [
   {
     title: 'System',
     items: [
+      { title: 'Users', href: '/users', icon: Users },
       { title: 'Notifications', href: '/notifications', icon: Bell },
       { title: 'Audit Logs', href: '/audit', icon: FileText },
     ],
   },
   {
     items: [
+      { title: 'Profile', href: '/profile', icon: User },
       { title: 'Settings', href: '/settings', icon: Settings },
     ],
   },
 ];
 
-// Staff Navigation
-export const staffNavigation: NavGroup[] = [
+// Staff Navigation (will be prefixed with /staff)
+const staffNavItems: NavGroup[] = [
   {
     items: [
       { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -84,13 +98,14 @@ export const staffNavigation: NavGroup[] = [
     items: [
       { title: 'Submissions', href: '/submissions', icon: Send },
       { title: 'Notifications', href: '/notifications', icon: Bell },
+      { title: 'Profile', href: '/profile', icon: User },
       { title: 'Settings', href: '/settings', icon: Settings },
     ],
   },
 ];
 
-// Lecturer Navigation
-export const lecturerNavigation: NavGroup[] = [
+// Lecturer Navigation (will be prefixed with /lecturer)
+const lecturerNavItems: NavGroup[] = [
   {
     items: [
       { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -100,13 +115,14 @@ export const lecturerNavigation: NavGroup[] = [
   {
     items: [
       { title: 'Notifications', href: '/notifications', icon: Bell },
+      { title: 'Profile', href: '/profile', icon: User },
       { title: 'Settings', href: '/settings', icon: Settings },
     ],
   },
 ];
 
-// Student Navigation
-export const studentNavigation: NavGroup[] = [
+// Student Navigation (will be prefixed with /student)
+const studentNavItems: NavGroup[] = [
   {
     items: [
       { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -116,15 +132,16 @@ export const studentNavigation: NavGroup[] = [
   {
     items: [
       { title: 'Notifications', href: '/notifications', icon: Bell },
+      { title: 'Profile', href: '/profile', icon: User },
       { title: 'Settings', href: '/settings', icon: Settings },
     ],
   },
 ];
 
 export function getNavigationForRole(roles: string[]): NavGroup[] {
-  if (roles.includes('ADMIN')) return adminNavigation;
-  if (roles.includes('STAFF')) return staffNavigation;
-  if (roles.includes('LECTURER')) return lecturerNavigation;
-  if (roles.includes('STUDENT')) return studentNavigation;
-  return studentNavigation; // Default
+  if (roles.includes('ADMIN')) return prefixRoutes(adminNavItems, '/admin');
+  if (roles.includes('STAFF')) return prefixRoutes(staffNavItems, '/staff');
+  if (roles.includes('LECTURER')) return prefixRoutes(lecturerNavItems, '/lecturer');
+  if (roles.includes('STUDENT')) return prefixRoutes(studentNavItems, '/student');
+  return prefixRoutes(studentNavItems, '/student'); // Default
 }
