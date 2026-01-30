@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authApi } from '@/apis/AuthApi';
 import { useAuthStore } from '@/store/auth.store';
+import { ApiError } from './errors';
 import type {
   LoginRequest,
   RegisterStudentRequest,
@@ -29,15 +30,16 @@ export function useLoginMutation() {
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
       toast.success('Login successful');
 
-      // Redirect based on role
-      const role = response.user.roles[0]?.code;
+      // Redirect based on role - safely handle undefined roles
+      const roles = response.user?.roles ?? [];
+      const role = roles[0]?.code;
       const dashboardMap: Record<string, string> = {
         ADMIN: '/admin',
         STAFF: '/staff',
         LECTURER: '/lecturer',
         STUDENT: '/student',
       };
-      navigate(dashboardMap[role] || '/dashboard');
+      navigate(dashboardMap[role] || '/student');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Login failed');
@@ -73,8 +75,12 @@ export function useRegisterStudentMutation() {
       toast.success(response.message || 'Registration successful');
       navigate('/login');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Registration failed');
+    onError: (error: ApiError) => {
+      // Show first field error or general message
+      const message = error.details?.[0]
+        ? `${error.details[0].field}: ${error.details[0].message}`
+        : error.message || 'Registration failed';
+      toast.error(message);
     },
   });
 }

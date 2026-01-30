@@ -3,7 +3,7 @@
  * Handles authentication and role-based access control
  */
 
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import { Loader2 } from 'lucide-react';
@@ -37,7 +37,7 @@ export function ProtectedRoute({
 
   // Check role-based access
   if (allowedRoles && user) {
-    const userRoles = user.roles.map((r) => r.code);
+    const userRoles = (user.roles ?? []).map((r) => r.code);
     const hasAccess = allowedRoles.some((role) => userRoles.includes(role));
 
     if (!hasAccess) {

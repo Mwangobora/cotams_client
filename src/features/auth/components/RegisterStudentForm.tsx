@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRegisterStudentMutation } from '../mutations';
 import { validateRegisterForm } from '../validators';
+import { ApiError } from '../errors';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
 export function RegisterStudentForm() {
@@ -19,7 +20,7 @@ export function RegisterStudentForm() {
     password_confirm: '',
     first_name: '',
     last_name: '',
-    student_id: '',
+    registration_number: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -41,6 +42,11 @@ export function RegisterStudentForm() {
       formData.last_name
     );
 
+    if (!formData.registration_number.trim()) {
+      validation.isValid = false;
+      validation.errors.registration_number = 'Registration number is required';
+    }
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
@@ -49,12 +55,20 @@ export function RegisterStudentForm() {
     registerMutation.mutate(formData);
   };
 
+  const apiError = registerMutation.error as ApiError | null;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {registerMutation.isError && (
+      {registerMutation.isError && apiError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{registerMutation.error.message}</AlertDescription>
+          <AlertDescription>
+            {apiError.details?.length
+              ? apiError.details.map((d, i) => (
+                  <div key={i}>{d.field ? `${d.field}: ${d.message}` : d.message}</div>
+                ))
+              : apiError.message}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -99,13 +113,17 @@ export function RegisterStudentForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="student_id">Student ID (Optional)</Label>
+        <Label htmlFor="registration_number">Registration Number</Label>
         <Input
-          id="student_id"
-          value={formData.student_id}
-          onChange={handleChange('student_id')}
+          id="registration_number"
+          placeholder="e.g., REG/2024/001"
+          value={formData.registration_number}
+          onChange={handleChange('registration_number')}
           disabled={registerMutation.isPending}
         />
+        {errors.registration_number && (
+          <p className="text-sm text-destructive">{errors.registration_number}</p>
+        )}
       </div>
 
       <div className="space-y-2">

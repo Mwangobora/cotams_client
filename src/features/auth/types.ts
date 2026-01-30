@@ -37,7 +37,7 @@ export interface RegisterStudentRequest {
   password_confirm: string;
   first_name: string;
   last_name: string;
-  student_id?: string;
+  registration_number: string;
 }
 
 export interface RegisterStaffRequest {
