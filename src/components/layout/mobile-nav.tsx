@@ -1,5 +1,5 @@
 import { Menu, X } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { type NavSection } from '@/config/navigation';
 import { Link, useLocation } from 'react-router-dom';
@@ -24,6 +24,10 @@ export function MobileNav({ navigation }: MobileNavProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
+        <SheetHeader className="sr-only">
+          <SheetTitle>Navigation Menu</SheetTitle>
+          <SheetDescription>Application navigation and user menu</SheetDescription>
+        </SheetHeader>
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center gap-2 border-b px-6">

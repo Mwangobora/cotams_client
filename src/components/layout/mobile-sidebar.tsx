@@ -1,6 +1,6 @@
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { Sidebar } from './sidebar';
 import type { NavGroup } from '@/config/navigation.config';
 import { useState } from 'react';
@@ -21,6 +21,10 @@ export function MobileSidebar({ navigation }: MobileSidebarProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0 w-72">
+        <SheetHeader className="sr-only">
+          <SheetTitle>Navigation Menu</SheetTitle>
+          <SheetDescription>Main navigation for the application</SheetDescription>
+        </SheetHeader>
         <Sidebar navigation={navigation} />
       </SheetContent>
     </Sheet>

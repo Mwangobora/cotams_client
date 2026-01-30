@@ -89,6 +89,7 @@ const staffNavItems: NavGroup[] = [
   {
     title: 'Academic Management',
     items: [
+      { title: 'Timetable', href: '/timetable', icon: Calendar },
       { title: 'Modules', href: '/modules', icon: BookOpen },
       { title: 'Curriculum', href: '/curriculum', icon: ClipboardList },
       { title: 'Module Lecturers', href: '/module-lecturers', icon: UserCheck },

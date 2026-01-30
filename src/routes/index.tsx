@@ -11,6 +11,7 @@ import { AdminDashboard } from '@/pages/dashboards/AdminDashboard';
 import { StaffDashboard } from '@/pages/dashboards/StaffDashboard';
 import { LecturerDashboard } from '@/pages/dashboards/LecturerDashboard';
 import { StudentDashboard } from '@/pages/dashboards/StudentDashboard';
+import { TimetablePage } from '@/features/timetable/components/TimetablePage';
 
 export function AppRouter() {
   return (
@@ -26,6 +27,7 @@ export function AppRouter() {
             <AppShell>
               <Routes>
                 <Route index element={<AdminDashboard />} />
+                <Route path="timetable" element={<TimetablePage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </AppShell>
@@ -40,6 +42,7 @@ export function AppRouter() {
             <AppShell>
               <Routes>
                 <Route index element={<StaffDashboard />} />
+                <Route path="timetable" element={<TimetablePage />} />
                 <Route path="*" element={<Navigate to="/staff" replace />} />
               </Routes>
             </AppShell>
@@ -54,6 +57,7 @@ export function AppRouter() {
             <AppShell>
               <Routes>
                 <Route index element={<LecturerDashboard />} />
+                <Route path="timetable" element={<TimetablePage />} />
                 <Route path="*" element={<Navigate to="/lecturer" replace />} />
               </Routes>
             </AppShell>
@@ -68,6 +72,7 @@ export function AppRouter() {
             <AppShell>
               <Routes>
                 <Route index element={<StudentDashboard />} />
+                <Route path="timetable" element={<TimetablePage />} />
                 <Route path="*" element={<Navigate to="/student" replace />} />
               </Routes>
             </AppShell>
