@@ -12,6 +12,10 @@ import { StaffDashboard } from '@/pages/dashboards/StaffDashboard';
 import { LecturerDashboard } from '@/pages/dashboards/LecturerDashboard';
 import { StudentDashboard } from '@/pages/dashboards/StudentDashboard';
 import { TimetablePage } from '@/features/timetable/components/TimetablePage';
+import { SessionsPage } from '@/features/admin/sessions/SessionsPage';
+import { RoomsPage } from '@/features/admin/rooms/RoomsPage';
+import { ProgramsPage } from '@/features/admin/programs/ProgramsPage';
+import { LecturersPage } from '@/features/admin/lecturers/LecturersPage';
 
 export function AppRouter() {
   return (
@@ -28,6 +32,10 @@ export function AppRouter() {
               <Routes>
                 <Route index element={<AdminDashboard />} />
                 <Route path="timetable" element={<TimetablePage />} />
+                <Route path="sessions" element={<SessionsPage />} />
+                <Route path="rooms" element={<RoomsPage />} />
+                <Route path="programs" element={<ProgramsPage />} />
+                <Route path="lecturers" element={<LecturersPage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </AppShell>

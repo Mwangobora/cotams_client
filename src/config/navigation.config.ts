@@ -1,5 +1,4 @@
 import { 
-  Home, 
   Calendar, 
   ClipboardList, 
   Users, 
@@ -61,6 +60,7 @@ const adminNavItems: NavGroup[] = [
     items: [
       { title: 'Rooms', href: '/rooms', icon: DoorOpen },
       { title: 'Programs', href: '/programs', icon: GraduationCap },
+      { title: 'Lecturers', href: '/lecturers', icon: UserCheck },
     ],
   },
   {

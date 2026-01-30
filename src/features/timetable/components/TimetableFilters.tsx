@@ -19,7 +19,8 @@ interface TimetableFiltersProps {
 }
 
 export function TimetableFilters({ filters, onFiltersChange, userRoles }: TimetableFiltersProps) {
-  const { isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
+  const isAuthenticated = !!user;
   const isAdmin = userRoles.includes('ADMIN');
 
   // Queries for dropdown options (only load when authenticated and needed)
