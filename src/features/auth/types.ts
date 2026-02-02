@@ -9,6 +9,29 @@ export interface Role {
   name: string;
 }
 
+export interface StaffProfile {
+  id: string;
+  employee_id?: string;
+  department: string;
+  department_name?: string;
+  title?: string;
+  office_location?: string;
+  phone_number?: string;
+  is_active?: boolean;
+}
+
+export interface LecturerProfile {
+  id: string;
+  employee_id?: string;
+  department: string;
+  department_name?: string;
+  title?: string;
+  specialization?: string[] | string;
+  office_location?: string;
+  phone_number?: string;
+  is_active?: boolean;
+}
+
 export interface User {
   id: number;
   email: string;
@@ -17,6 +40,8 @@ export interface User {
   last_name: string;
   full_name: string;
   roles: Role[];
+  staff_profile?: StaffProfile | null;
+  lecturer_profile?: LecturerProfile | null;
   is_active: boolean;
   created_at: string;
 }

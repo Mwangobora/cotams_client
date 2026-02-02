@@ -31,6 +31,12 @@ export const API_ENDPOINTS = {
     curriculum: '/academics/curriculum/',
     programs: '/academics/programs/',
     programDetail: (id: string) => `/academics/programs/${id}/`,
+    moduleLecturers: '/academics/module-lecturers/',
+    submissions: '/academics/submissions/',
+    submissionDetail: (id: string) => `/academics/submissions/${id}/`,
+    submissionSubmit: (id: string) => `/academics/submissions/${id}/submit/`,
+    submissionApprove: (id: string) => `/academics/submissions/${id}/approve/`,
+    submissionReject: (id: string) => `/academics/submissions/${id}/reject/`,
   },
 
   // Resources

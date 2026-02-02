@@ -16,6 +16,7 @@ import { SessionsPage } from '@/features/admin/sessions/SessionsPage';
 import { RoomsPage } from '@/features/admin/rooms/RoomsPage';
 import { ProgramsPage } from '@/features/admin/programs/ProgramsPage';
 import { LecturersPage } from '@/features/admin/lecturers/LecturersPage';
+import { SubmissionsPage } from '@/features/submissions/SubmissionsPage';
 
 export function AppRouter() {
   return (
@@ -36,6 +37,7 @@ export function AppRouter() {
                 <Route path="rooms" element={<RoomsPage />} />
                 <Route path="programs" element={<ProgramsPage />} />
                 <Route path="lecturers" element={<LecturersPage />} />
+                <Route path="submissions" element={<SubmissionsPage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </AppShell>
@@ -51,6 +53,7 @@ export function AppRouter() {
               <Routes>
                 <Route index element={<StaffDashboard />} />
                 <Route path="timetable" element={<TimetablePage />} />
+                <Route path="submissions" element={<SubmissionsPage />} />
                 <Route path="*" element={<Navigate to="/staff" replace />} />
               </Routes>
             </AppShell>
