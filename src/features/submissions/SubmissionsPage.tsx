@@ -2,7 +2,7 @@
  * Academic Submissions Feature (Staff/Admin)
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
@@ -38,8 +38,10 @@ import { useAuthStore } from '@/store/auth.store';
 import { LecturersApi } from '@/apis/LecturersApi';
 import { ModulesApi } from '@/apis/ModulesApi';
 import { SubmissionsApi } from '@/apis/SubmissionsApi';
+import { DepartmentsApi } from '@/apis/DepartmentsApi';
 import type { Lecturer } from '@/types/lecturers';
 import type { Module } from '@/types/modules';
+import type { Department } from '@/types/departments';
 import type {
   AcademicSubmission,
   SubmissionStatus,
@@ -254,6 +256,7 @@ export function SubmissionsPage() {
   const submissionsApi = new SubmissionsApi();
   const lecturersApi = new LecturersApi();
   const modulesApi = new ModulesApi();
+  const departmentsApi = new DepartmentsApi();
 
   const [selectedSubmission, setSelectedSubmission] = useState<AcademicSubmission | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -261,12 +264,25 @@ export function SubmissionsPage() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
   const [moduleItems, setModuleItems] = useState<ModuleDraft[]>([]);
   const [moduleLecturerItems, setModuleLecturerItems] = useState<ModuleLecturerDraft[]>([]);
+
+  useEffect(() => {
+    if (departmentId && !selectedDepartment) {
+      setSelectedDepartment(departmentId);
+    }
+  }, [departmentId, selectedDepartment]);
 
   const { data: submissionsResponse, isLoading } = useQuery({
     queryKey: ['submissions', isAdmin ? 'admin' : 'staff'],
     queryFn: () => submissionsApi.getSubmissions(),
+  });
+
+  const { data: departmentsResponse, isLoading: loadingDepartments } = useQuery({
+    queryKey: ['departments'],
+    queryFn: () => departmentsApi.getDepartments({ is_active: true }),
+    enabled: isStaff,
   });
 
   const { data: lecturersResponse, isLoading: loadingLecturers } = useQuery({
@@ -289,6 +305,9 @@ export function SubmissionsPage() {
   const modules = Array.isArray(modulesResponse)
     ? modulesResponse
     : modulesResponse?.results || [];
+  const departments = Array.isArray(departmentsResponse)
+    ? departmentsResponse
+    : departmentsResponse?.results || [];
 
   const createMutation = useMutation({
     mutationFn: (payload: {
@@ -437,7 +456,7 @@ export function SubmissionsPage() {
   };
 
   const handleCreateSubmission = () => {
-    if (!departmentId) {
+    if (!selectedDepartment) {
       toast.error('Department is required to create a submission.');
       return;
     }
@@ -498,7 +517,7 @@ export function SubmissionsPage() {
     createMutation.mutate({
       title: title.trim(),
       description: description.trim(),
-      department: departmentId,
+      department: selectedDepartment,
       module_items,
       module_lecturer_items,
     });
@@ -527,10 +546,10 @@ export function SubmissionsPage() {
 
         {isStaff && (
           <TabsContent value="create" className="space-y-4">
-            {!departmentId && (
+            {departments.length === 0 && !loadingDepartments && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  Your staff profile is missing a department. Contact an admin to update it.
+                  No departments available. Ask an admin to create a department first.
                 </AlertDescription>
               </Alert>
             )}
@@ -543,7 +562,29 @@ export function SubmissionsPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Department</Label>
-                    <Input value={departmentName || departmentId || '—'} disabled />
+                    <Select
+                      value={selectedDepartment}
+                      onValueChange={setSelectedDepartment}
+                      disabled={loadingDepartments}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={loadingDepartments ? 'Loading...' : 'Select department'}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {departments.map((department: Department) => (
+                          <SelectItem key={department.id} value={department.id}>
+                            {department.code} - {department.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {departmentName && !selectedDepartment && (
+                      <div className="text-xs text-muted-foreground">
+                        Default department: {departmentName}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Title</Label>
@@ -782,7 +823,7 @@ export function SubmissionsPage() {
                 <div className="flex justify-end">
                   <Button
                     onClick={handleCreateSubmission}
-                    disabled={createMutation.isPending || !departmentId}
+                    disabled={createMutation.isPending || !selectedDepartment}
                   >
                     {createMutation.isPending ? 'Creating...' : 'Create Submission'}
                   </Button>

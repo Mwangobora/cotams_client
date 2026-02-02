@@ -47,6 +47,12 @@ export const API_ENDPOINTS = {
     equipment: '/resources/equipment/',
   },
 
+  // Institutions
+  institutions: {
+    departments: '/institutions/departments/',
+    departmentDetail: (id: string) => `/institutions/departments/${id}/`,
+  },
+
   // Accounts/Users
   accounts: {
     users: '/accounts/users/',

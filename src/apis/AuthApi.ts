@@ -4,6 +4,7 @@
  */
 
 import axios from '@/services/api';
+import Cookies from 'js-cookie';
 import { normalizeAxiosError } from '@/features/auth/errors';
 import type {
   LoginRequest,
@@ -29,6 +30,12 @@ export class AuthApi {
   async login(data: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await axios.post<LoginResponse>(`${this.basePath}/login/`, data);
+      if (response.data?.access) {
+        Cookies.set('access_token', response.data.access);
+      }
+      if (response.data?.refresh) {
+        Cookies.set('refresh_token', response.data.refresh);
+      }
       return response.data;
     } catch (error) {
       throw normalizeAxiosError(error);
@@ -42,6 +49,8 @@ export class AuthApi {
   async logout(): Promise<void> {
     try {
       await axios.post(`${this.basePath}/logout/`);
+      Cookies.remove('access_token');
+      Cookies.remove('refresh_token');
     } catch (error) {
       throw normalizeAxiosError(error);
     }

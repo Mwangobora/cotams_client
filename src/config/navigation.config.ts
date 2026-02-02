@@ -4,6 +4,7 @@ import {
   Users, 
   BookOpen, 
   DoorOpen,
+  Building2,
   Bell,
   FileText,
   Settings,
@@ -58,6 +59,7 @@ const adminNavItems: NavGroup[] = [
   {
     title: 'Resources',
     items: [
+      { title: 'Departments', href: '/departments', icon: Building2 },
       { title: 'Rooms', href: '/rooms', icon: DoorOpen },
       { title: 'Programs', href: '/programs', icon: GraduationCap },
       { title: 'Lecturers', href: '/lecturers', icon: UserCheck },
