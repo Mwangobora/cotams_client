@@ -20,6 +20,7 @@ import type {
   ChangePasswordResponse,
   MeResponse,
 } from '@/features/auth/types';
+import type { User } from '@/features/auth/types';
 export class AuthApi {
   private basePath = '/auth';
 
@@ -62,8 +63,12 @@ export class AuthApi {
    */
   async me(): Promise<MeResponse> {
     try {
-      const response = await axios.get<MeResponse>(`${this.basePath}/me/`);
-      return response.data;
+      const response = await axios.get<MeResponse | User>(`${this.basePath}/me/`);
+      const data = response.data as MeResponse;
+      if (data && (data as MeResponse).user) {
+        return data;
+      }
+      return { user: response.data as User };
     } catch (error) {
       throw normalizeAxiosError(error);
     }

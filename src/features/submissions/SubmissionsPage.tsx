@@ -292,8 +292,11 @@ export function SubmissionsPage() {
   });
 
   const { data: modulesResponse, isLoading: loadingModules } = useQuery({
-    queryKey: ['modules'],
-    queryFn: () => modulesApi.getModules(),
+    queryKey: ['modules', selectedDepartment],
+    queryFn: () =>
+      modulesApi.getModules(
+        selectedDepartment ? { department: selectedDepartment } : {}
+      ),
     enabled: isStaff,
   });
 
@@ -740,6 +743,11 @@ export function SubmissionsPage() {
                                   <SelectValue placeholder={loadingModules ? 'Loading...' : 'Select module'} />
                                 </SelectTrigger>
                                 <SelectContent>
+                                  {modules.length === 0 && (
+                                    <SelectItem value="__none" disabled>
+                                      No modules found
+                                    </SelectItem>
+                                  )}
                                   {modules.map((module: Module) => (
                                     <SelectItem key={module.id} value={module.id}>
                                       {module.code} - {module.name}

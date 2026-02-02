@@ -28,6 +28,33 @@ export class ModulesApi {
       throw normalizeAxiosError(error);
     }
   }
+
+  /**
+   * Create module
+   */
+  async createModule(data: Omit<Module, 'id' | 'created_at' | 'updated_at'>): Promise<Module> {
+    try {
+      const response = await axios.post<Module>(API_ENDPOINTS.academics.modules, data);
+      return response.data;
+    } catch (error) {
+      throw normalizeAxiosError(error);
+    }
+  }
+
+  /**
+   * Update module
+   */
+  async updateModule(
+    id: string,
+    data: Partial<Omit<Module, 'id' | 'created_at' | 'updated_at'>>
+  ): Promise<Module> {
+    try {
+      const response = await axios.patch<Module>(API_ENDPOINTS.academics.moduleDetail(id), data);
+      return response.data;
+    } catch (error) {
+      throw normalizeAxiosError(error);
+    }
+  }
 }
 
 export const modulesApi = new ModulesApi();

@@ -115,5 +115,8 @@ export interface ChangePasswordResponse {
 }
 
 export interface MeResponse {
-  user: User;
+  user?: User;
+  id?: number;
+  email?: string;
+  roles?: Role[];
 }
