@@ -2,7 +2,7 @@
  * Lecturers Management (Staff)
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
@@ -74,6 +74,7 @@ export function LecturersPage() {
   const departmentId = user?.staff_profile?.department || '';
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
   const [formData, setFormData] = useState<LecturerFormState>({
     ...defaultForm,
     department: departmentId,
@@ -85,10 +86,10 @@ export function LecturersPage() {
   });
 
   const { data: lecturersResponse, isLoading } = useQuery({
-    queryKey: ['lecturers', formData.department],
+    queryKey: ['lecturers', selectedDepartment],
     queryFn: () =>
-      formData.department
-        ? lecturersApi.getDepartmentLecturers(formData.department)
+      selectedDepartment
+        ? lecturersApi.getDepartmentLecturers(selectedDepartment)
         : Promise.resolve([]),
   });
 
@@ -96,6 +97,19 @@ export function LecturersPage() {
     ? departmentsResponse
     : departmentsResponse?.results || [];
   const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : [];
+
+  useEffect(() => {
+    if (departmentId && !selectedDepartment) {
+      setSelectedDepartment(departmentId);
+      setFormData((prev) => ({ ...prev, department: departmentId }));
+      return;
+    }
+    if (!selectedDepartment && departments.length > 0) {
+      const fallbackDept = departments[0].id;
+      setSelectedDepartment(fallbackDept);
+      setFormData((prev) => ({ ...prev, department: fallbackDept }));
+    }
+  }, [departmentId, selectedDepartment, departments]);
 
   const createMutation = useMutation({
     mutationFn: (data: LecturerFormState) =>
@@ -113,7 +127,8 @@ export function LecturersPage() {
       }),
     onSuccess: () => {
       toast.success('Lecturer created');
-      queryClient.invalidateQueries({ queryKey: ['lecturers'] });
+      queryClient.invalidateQueries({ queryKey: ['lecturers'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['lecturers', selectedDepartment] });
       setDialogOpen(false);
       setFormData({ ...defaultForm, department: formData.department });
     },
@@ -161,6 +176,29 @@ export function LecturersPage() {
 
   return (
     <>
+      <div className="mb-4">
+        <Label>Department</Label>
+        <Select
+          value={selectedDepartment}
+          onValueChange={(value) => {
+            setSelectedDepartment(value);
+            setFormData((prev) => ({ ...prev, department: value }));
+          }}
+          disabled={loadingDepartments || Boolean(departmentId)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={loadingDepartments ? 'Loading...' : 'Select department'} />
+          </SelectTrigger>
+          <SelectContent>
+            {departments.map((dept: Department) => (
+              <SelectItem key={dept.id} value={dept.id}>
+                {dept.code} - {dept.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <DataTable
         title="Lecturers"
         columns={columns}
