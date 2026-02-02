@@ -57,10 +57,6 @@ export function ModulesPage() {
     }
   }, [departmentId, selectedDepartment]);
 
-  console.log('[ModulesPage] user', user);
-  console.log('[ModulesPage] departmentId', departmentId);
-  console.log('[ModulesPage] departmentName', departmentName);
-  console.log('[ModulesPage] selectedDepartment', selectedDepartment);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState<Module | null>(null);
@@ -84,7 +80,6 @@ export function ModulesPage() {
       api.getModules(selectedDepartment ? { department: selectedDepartment } : {}),
   });
 
-  console.log('[ModulesPage] modulesResponse', modulesResponse);
 
   const modules = Array.isArray(modulesResponse)
     ? modulesResponse
@@ -100,14 +95,12 @@ export function ModulesPage() {
         department: selectedDepartment,
       }),
     onSuccess: () => {
-      console.log('[ModulesPage] createModule success');
       toast.success('Module created');
       queryClient.invalidateQueries({ queryKey: ['modules'], exact: false });
       queryClient.invalidateQueries({ queryKey: ['modules', selectedDepartment] });
       setDialogOpen(false);
     },
     onError: (error: any) => {
-      console.log('[ModulesPage] createModule error', error);
       toast.error(error.message || 'Failed to create module');
     },
   });
@@ -116,13 +109,11 @@ export function ModulesPage() {
     mutationFn: ({ id, data }: { id: string; data: ModuleFormState }) =>
       api.updateModule(id, data),
     onSuccess: () => {
-      console.log('[ModulesPage] updateModule success');
       toast.success('Module updated');
       queryClient.invalidateQueries({ queryKey: ['modules'] });
       setDialogOpen(false);
     },
     onError: (error: any) => {
-      console.log('[ModulesPage] updateModule error', error);
       toast.error(error.message || 'Failed to update module');
     },
   });
@@ -207,14 +198,6 @@ export function ModulesPage() {
 
   return (
     <>
-      <div className="mb-4 rounded-md border border-dashed p-3 text-xs text-muted-foreground">
-        <div>Debug: user id {user?.id ?? 'none'}</div>
-        <div>Debug: roles {(user?.roles || []).map((r) => r.code).join(', ') || 'none'}</div>
-        <div>Debug: departmentId {departmentId || 'none'}</div>
-        <div>Debug: departmentName {departmentName || 'none'}</div>
-        <div>Debug: selectedDepartment {selectedDepartment || 'none'}</div>
-      </div>
-
       {!selectedDepartment && (
         <Alert variant="destructive">
           <AlertDescription>

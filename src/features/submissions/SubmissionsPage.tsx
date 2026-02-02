@@ -45,18 +45,8 @@ import type { Department } from '@/types/departments';
 import type {
   AcademicSubmission,
   SubmissionStatus,
-  SubmissionModuleInput,
   SubmissionModuleLecturerInput
 } from '@/types/submissions';
-
-interface ModuleDraft {
-  proposed_code: string;
-  proposed_name: string;
-  proposed_description: string;
-  proposed_credits: number;
-  proposed_hours_per_week: number;
-  proposed_is_active: boolean;
-}
 
 interface ModuleLecturerDraft {
   proposed_module: string;
@@ -265,7 +255,6 @@ export function SubmissionsPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
-  const [moduleItems, setModuleItems] = useState<ModuleDraft[]>([]);
   const [moduleLecturerItems, setModuleLecturerItems] = useState<ModuleLecturerDraft[]>([]);
 
   useEffect(() => {
@@ -276,7 +265,7 @@ export function SubmissionsPage() {
 
   const { data: submissionsResponse, isLoading } = useQuery({
     queryKey: ['submissions', isAdmin ? 'admin' : 'staff'],
-    queryFn: () => submissionsApi.getSubmissions(),
+      queryFn: () => submissionsApi.getSubmissions(),
   });
 
   const { data: departmentsResponse, isLoading: loadingDepartments } = useQuery({
@@ -286,8 +275,11 @@ export function SubmissionsPage() {
   });
 
   const { data: lecturersResponse, isLoading: loadingLecturers } = useQuery({
-    queryKey: ['lecturers'],
-    queryFn: () => lecturersApi.getLecturers(),
+    queryKey: ['lecturers', selectedDepartment],
+    queryFn: () =>
+      selectedDepartment
+        ? lecturersApi.getDepartmentLecturers(selectedDepartment)
+        : Promise.resolve([]),
     enabled: isStaff,
   });
 
@@ -299,6 +291,7 @@ export function SubmissionsPage() {
       ),
     enabled: isStaff,
   });
+
 
   const submissions = Array.isArray(submissionsResponse)
     ? submissionsResponse
@@ -317,7 +310,6 @@ export function SubmissionsPage() {
       title: string;
       description?: string;
       department: string;
-      module_items: SubmissionModuleInput[];
       module_lecturer_items: SubmissionModuleLecturerInput[];
     }) => submissionsApi.createSubmission(payload),
     onSuccess: () => {
@@ -325,7 +317,6 @@ export function SubmissionsPage() {
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
       setTitle('');
       setDescription('');
-      setModuleItems([]);
       setModuleLecturerItems([]);
     },
     onError: (error: any) => {
@@ -411,30 +402,6 @@ export function SubmissionsPage() {
     setDetailsOpen(true);
   };
 
-  const addModuleItem = () => {
-    setModuleItems((items) => [
-      ...items,
-      {
-        proposed_code: '',
-        proposed_name: '',
-        proposed_description: '',
-        proposed_credits: 3,
-        proposed_hours_per_week: 3,
-        proposed_is_active: true,
-      },
-    ]);
-  };
-
-  const updateModuleItem = (index: number, value: Partial<ModuleDraft>) => {
-    setModuleItems((items) =>
-      items.map((item, idx) => (idx === index ? { ...item, ...value } : item))
-    );
-  };
-
-  const removeModuleItem = (index: number) => {
-    setModuleItems((items) => items.filter((_, idx) => idx !== index));
-  };
-
   const addModuleLecturerItem = () => {
     setModuleLecturerItems((items) => [
       ...items,
@@ -467,20 +434,8 @@ export function SubmissionsPage() {
       toast.error('Title is required.');
       return;
     }
-    if (moduleItems.length === 0 && moduleLecturerItems.length === 0) {
-      toast.error('Add at least one module or lecturer assignment.');
-      return;
-    }
-
-    const invalidModule = moduleItems.find(
-      (item) =>
-        !item.proposed_code.trim() ||
-        !item.proposed_name.trim() ||
-        item.proposed_credits <= 0 ||
-        item.proposed_hours_per_week <= 0
-    );
-    if (invalidModule) {
-      toast.error('Fill all module fields with valid values.');
+    if (moduleLecturerItems.length === 0) {
+      toast.error('Add at least one lecturer assignment.');
       return;
     }
 
@@ -495,16 +450,6 @@ export function SubmissionsPage() {
       toast.error('Fill all lecturer assignment fields.');
       return;
     }
-
-    const module_items: SubmissionModuleInput[] = moduleItems.map((item) => ({
-      action: 'CREATE',
-      proposed_code: item.proposed_code.trim(),
-      proposed_name: item.proposed_name.trim(),
-      proposed_description: item.proposed_description.trim(),
-      proposed_credits: item.proposed_credits,
-      proposed_hours_per_week: item.proposed_hours_per_week,
-      proposed_is_active: item.proposed_is_active,
-    }));
 
     const module_lecturer_items: SubmissionModuleLecturerInput[] = moduleLecturerItems.map(
       (item) => ({
@@ -521,7 +466,6 @@ export function SubmissionsPage() {
       title: title.trim(),
       description: description.trim(),
       department: selectedDepartment,
-      module_items,
       module_lecturer_items,
     });
   };
@@ -607,102 +551,6 @@ export function SubmissionsPage() {
                     placeholder="Describe the changes being proposed"
                   />
                 </div>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="text-base">Module Proposals</CardTitle>
-                    <Button type="button" variant="outline" onClick={addModuleItem}>
-                      Add Module
-                    </Button>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {moduleItems.length === 0 ? (
-                      <div className="text-sm text-muted-foreground">
-                        No module proposals yet.
-                      </div>
-                    ) : (
-                      moduleItems.map((item, index) => (
-                        <div key={`${item.proposed_code}-${index}`} className="rounded-md border p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="font-medium">Module #{index + 1}</div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              onClick={() => removeModuleItem(index)}
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                          <div className="mt-4 grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                              <Label>Code</Label>
-                              <Input
-                                value={item.proposed_code}
-                                onChange={(event) =>
-                                  updateModuleItem(index, { proposed_code: event.target.value })
-                                }
-                                placeholder="CS401"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Name</Label>
-                              <Input
-                                value={item.proposed_name}
-                                onChange={(event) =>
-                                  updateModuleItem(index, { proposed_name: event.target.value })
-                                }
-                                placeholder="Machine Learning"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Credits</Label>
-                              <Input
-                                type="number"
-                                min={1}
-                                value={item.proposed_credits}
-                                onChange={(event) =>
-                                  updateModuleItem(index, { proposed_credits: Number(event.target.value) })
-                                }
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Hours / Week</Label>
-                              <Input
-                                type="number"
-                                min={1}
-                                value={item.proposed_hours_per_week}
-                                onChange={(event) =>
-                                  updateModuleItem(index, {
-                                    proposed_hours_per_week: Number(event.target.value),
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="mt-4 space-y-2">
-                            <Label>Description</Label>
-                            <Textarea
-                              value={item.proposed_description}
-                              onChange={(event) =>
-                                updateModuleItem(index, { proposed_description: event.target.value })
-                              }
-                              placeholder="Module description"
-                            />
-                          </div>
-                          <div className="mt-4 flex items-center gap-2">
-                            <Checkbox
-                              checked={item.proposed_is_active}
-                              onCheckedChange={(checked) =>
-                                updateModuleItem(index, { proposed_is_active: Boolean(checked) })
-                              }
-                            />
-                            <Label>Active</Label>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </CardContent>
-                </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">

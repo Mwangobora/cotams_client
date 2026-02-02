@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
   institutions: {
     departments: '/institutions/departments/',
     departmentDetail: (id: string) => `/institutions/departments/${id}/`,
+    departmentLecturers: (id: string) => `/institutions/departments/${id}/lecturers/`,
   },
 
   // Accounts/Users
@@ -61,6 +62,7 @@ export const API_ENDPOINTS = {
     staff: '/accounts/users/?role=STAFF',
     students: '/accounts/users/?role=STUDENT',
     profile: '/accounts/profile/',
+    adminUsers: '/admin/users/',
   },
 
   // Notifications
