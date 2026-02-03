@@ -52,4 +52,6 @@ export interface ProgramFilters {
   search?: string;
   is_active?: boolean;
   duration_years?: number;
+  department?: string;
+  level?: string;
 }

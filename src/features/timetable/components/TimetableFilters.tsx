@@ -81,7 +81,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
 
   const { data: programsResponse } = useQuery({
     queryKey: ['programs', departmentFilter],
-    queryFn: () => programsApi.getPrograms(departmentFilter ? { department: departmentFilter } : {}),
+    queryFn: () => programsApi.getPrograms(departmentFilter ? { department: departmentFilter } : undefined),
     enabled: isAuthenticated,
   });
   const programs = Array.isArray(programsResponse)

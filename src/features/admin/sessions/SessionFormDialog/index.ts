@@ -1,2 +1,10 @@
-// Export from the same directory
 export { SessionFormDialog } from './SessionFormDialog';
+export { SessionFormDialogView } from './components/SessionFormDialogView';
+export { ProgramStreamSelector } from './components/ProgramStreamSelector';
+export { LecturerModuleSelector } from './components/LecturerModuleSelector';
+export { RoomSelector } from './components/RoomSelector';
+export { ScheduleFields } from './components/ScheduleFields';
+export { useSessionFormController } from './hooks/useSessionFormController';
+export { useSessionFormState } from './hooks/useSessionFormState';
+export { useSessionOptions } from './hooks/useSessionOptions';
+export { useSessionAssignments } from './hooks/useSessionAssignments';
