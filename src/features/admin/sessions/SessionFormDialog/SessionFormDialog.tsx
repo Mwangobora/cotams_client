@@ -46,6 +46,7 @@ export function SessionFormDialog({
   onOpenChange, 
   session 
 }: SessionFormDialogProps) {
+  const currentYear = new Date().getFullYear().toString();
   const [formData, setFormData] = useState<SessionFormData>({
     stream: '',
     module: '',
@@ -55,7 +56,7 @@ export function SessionFormDialog({
     start_time: '',
     end_time: '',
     session_type: 'LECTURE' as SessionType,
-    academic_year: '2024',
+    academic_year: currentYear,
     semester: 'SEMESTER_1' as Semester
   });
   const [clashError, setClashError] = useState<string>('');
@@ -233,7 +234,7 @@ export function SessionFormDialog({
         start_time: '',
         end_time: '',
         session_type: 'LECTURE' as SessionType,
-        academic_year: '2024',
+        academic_year: currentYear,
         semester: 'SEMESTER_1' as Semester
       });
       setSelectedAssignmentId('');

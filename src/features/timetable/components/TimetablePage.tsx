@@ -23,10 +23,7 @@ import type { TimetableFilters as FilterType, DayOfWeek, SessionsByDay } from '.
 
 export function TimetablePage() {
   const { user } = useAuthStore();
-  const [filters, setFilters] = useState<FilterType>({
-    academic_year: new Date().getFullYear().toString(),
-    semester: 'SEMESTER_1',
-  });
+  const [filters, setFilters] = useState<FilterType>({});
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>('MON');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
