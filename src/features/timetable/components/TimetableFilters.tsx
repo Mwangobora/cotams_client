@@ -2,14 +2,23 @@
  * Timetable Filters Component - Role-based filtering
  */
 
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/auth.store';
-import { useStreamsQuery, useRoomsQuery, useLecturersQuery } from '../queries';
+import { useRoomsQuery, useLecturersQuery } from '../queries';
 import { Filter, RotateCcw } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { DepartmentsApi } from '@/apis/DepartmentsApi';
+import { ProgramsApi } from '@/apis/ProgramsApi';
+import { ProgramYearsApi } from '@/apis/ProgramYearsApi';
+import { StreamsApi } from '@/apis/StreamsApi';
+import type { Department } from '@/types/departments';
+import type { Program, ProgramYear } from '@/types/programs';
+import type { Stream } from '@/types/streams';
 import type { TimetableFilters } from '../types';
 
 interface TimetableFiltersProps {
@@ -22,16 +31,27 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
   const { user } = useAuthStore();
   const isAuthenticated = !!user;
   const isAdmin = userRoles.includes('ADMIN');
+  const isLecturer = userRoles.includes('LECTURER');
+  const isStudent = userRoles.includes('STUDENT');
+  const showStreamSelectors = isLecturer || isStudent;
+
+  const departmentsApi = new DepartmentsApi();
+  const programsApi = new ProgramsApi();
+  const programYearsApi = new ProgramYearsApi();
+  const streamsApi = new StreamsApi();
+
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('__all');
+  const [selectedProgram, setSelectedProgram] = useState<string>('__all');
+  const [selectedProgramYear, setSelectedProgramYear] = useState<string>('__all');
 
   // Queries for dropdown options (only load when authenticated and needed)
-  const { data: streams = [], isLoading: loadingStreams } = useStreamsQuery({ enabled: isAuthenticated && isAdmin });
   const { data: rooms = [], isLoading: loadingRooms } = useRoomsQuery({ enabled: isAuthenticated && isAdmin });
   const { data: lecturers = [], isLoading: loadingLecturers } = useLecturersQuery({ enabled: isAuthenticated && isAdmin });
 
   const updateFilter = (key: keyof TimetableFilters, value: string | undefined) => {
     onFiltersChange({
       ...filters,
-      [key]: value === '' || value === 'all' ? undefined : value,
+      [key]: value === '' || value === 'all' || value === '__all' ? undefined : value,
     });
   };
 
@@ -45,6 +65,56 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
 
   const currentYear = new Date().getFullYear();
   const academicYears = Array.from({ length: 5 }, (_, i) => `${currentYear + i - 2}`);
+
+  const departmentFilter = selectedDepartment === '__all' ? '' : selectedDepartment;
+  const programFilter = selectedProgram === '__all' ? '' : selectedProgram;
+  const programYearFilter = selectedProgramYear === '__all' ? '' : selectedProgramYear;
+
+  const { data: departmentsResponse } = useQuery({
+    queryKey: ['departments'],
+    queryFn: () => departmentsApi.getDepartments({ is_active: true }),
+    enabled: isAuthenticated,
+  });
+  const departments = Array.isArray(departmentsResponse)
+    ? departmentsResponse
+    : departmentsResponse?.results || [];
+
+  const { data: programsResponse } = useQuery({
+    queryKey: ['programs', departmentFilter],
+    queryFn: () => programsApi.getPrograms(departmentFilter ? { department: departmentFilter } : {}),
+    enabled: isAuthenticated,
+  });
+  const programs = Array.isArray(programsResponse)
+    ? programsResponse
+    : programsResponse?.results || [];
+
+  const { data: programYearsResponse } = useQuery({
+    queryKey: ['program-years', programFilter],
+    queryFn: () => programYearsApi.getProgramYears(programFilter ? { program: programFilter } : {}),
+    enabled: isAuthenticated,
+  });
+  const programYears = Array.isArray(programYearsResponse)
+    ? programYearsResponse
+    : programYearsResponse?.results || [];
+
+  const { data: streamsResponse } = useQuery({
+    queryKey: ['streams', programYearFilter],
+    queryFn: () =>
+      streamsApi.getStreams(programYearFilter ? { program_year: programYearFilter } : {}),
+    enabled: isAuthenticated,
+  });
+  const streams = Array.isArray(streamsResponse)
+    ? streamsResponse
+    : streamsResponse?.results || [];
+
+  const programYearLabelMap = useMemo(() => {
+    return new Map(
+      programYears.map((year: ProgramYear) => [
+        year.id,
+        `${year.program_code ? `${year.program_code} - ` : ''}Year ${year.year_number}`,
+      ])
+    );
+  }, [programYears]);
 
   return (
     <Card className="sticky top-4">
@@ -87,28 +157,103 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
           </Select>
         </div>
 
-        {/* Stream - Admin only */}
-        {isAdmin && (
-          <div className="space-y-2">
-            <Label>Stream</Label>
-            {loadingStreams ? (
-              <Skeleton className="h-10 w-full" />
-            ) : (
-              <Select value={filters.stream || ''} onValueChange={(value) => updateFilter('stream', value)}>
+        {/* Stream selectors for lecturers/students */}
+        {showStreamSelectors && (
+          <>
+            {isLecturer && (
+              <div className="space-y-2">
+                <Label>Department</Label>
+                <Select
+                  value={selectedDepartment}
+                  onValueChange={(value) => {
+                    setSelectedDepartment(value);
+                    setSelectedProgram('__all');
+                    setSelectedProgramYear('__all');
+                    updateFilter('stream', '__all');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All departments" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all">All departments</SelectItem>
+                    {departments.map((dept: Department) => (
+                      <SelectItem key={dept.id} value={dept.id}>
+                        {dept.code} - {dept.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Program</Label>
+              <Select
+                value={selectedProgram}
+                onValueChange={(value) => {
+                  setSelectedProgram(value);
+                  setSelectedProgramYear('__all');
+                  updateFilter('stream', '__all');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All programs" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all">All programs</SelectItem>
+                  {programs.map((program: Program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.code} - {program.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Program Year</Label>
+              <Select
+                value={selectedProgramYear}
+                onValueChange={(value) => {
+                  setSelectedProgramYear(value);
+                  updateFilter('stream', '__all');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All years" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all">All years</SelectItem>
+                  {programYears.map((year: ProgramYear) => (
+                    <SelectItem key={year.id} value={year.id}>
+                      {programYearLabelMap.get(year.id) || `Year ${year.year_number}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Stream</Label>
+              <Select
+                value={filters.stream || '__all'}
+                onValueChange={(value) => updateFilter('stream', value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All streams" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All streams</SelectItem>
-                  {streams.map((stream) => (
-                    <SelectItem key={stream.id} value={stream.id.toString()}>
+                  <SelectItem value="__all">All streams</SelectItem>
+                  {streams.map((stream: Stream) => (
+                    <SelectItem key={stream.id} value={stream.id}>
                       {stream.stream_code} - {stream.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}
-          </div>
+            </div>
+          </>
         )}
 
         {/* Lecturer - Admin only */}

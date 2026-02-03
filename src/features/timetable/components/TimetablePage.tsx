@@ -34,13 +34,7 @@ export function TimetablePage() {
   const isStudent = userRoles.includes('STUDENT');
 
   // Auto-set role-based filters
-  const roleFilters: FilterType = {
-    ...filters,
-    ...(isLecturer ? { lecturer: user?.id?.toString() } : {}),
-    ...(isStudent ? { student: user?.id } : {}),
-  };
-
-  const { data: sessions = [], isLoading, error, refetch } = useSessionsQuery(roleFilters);
+  const { data: sessions = [], isLoading, error, refetch } = useSessionsQuery(filters);
 
   // Group sessions by day for grid view
   const sessionsByDay: SessionsByDay = sessions.reduce((acc, session) => {
