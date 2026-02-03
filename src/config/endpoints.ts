@@ -24,13 +24,15 @@ export const API_ENDPOINTS = {
 
   // Academics
   academics: {
-    streams: '/academics/streams/',
-    streamDetail: (id: string) => `/academics/streams/${id}/`,
     modules: '/academics/modules/',
     moduleDetail: (id: string) => `/academics/modules/${id}/`,
     curriculum: '/academics/curriculum/',
     programs: '/academics/programs/',
     programDetail: (id: string) => `/academics/programs/${id}/`,
+    programYears: '/academics/program-years/',
+    programYearDetail: (id: string) => `/academics/program-years/${id}/`,
+    streams: '/academics/streams/',
+    streamDetail: (id: string) => `/academics/streams/${id}/`,
     moduleLecturers: '/academics/module-lecturers/',
     submissions: '/academics/submissions/',
     submissionDetail: (id: string) => `/academics/submissions/${id}/`,

@@ -22,6 +22,8 @@ import { ModulesPage } from '@/features/staff/modules/ModulesPage';
 import { ModuleLecturersPage } from '@/features/staff/module-lecturers/ModuleLecturersPage';
 import { LecturersPage as StaffLecturersPage } from '@/features/staff/lecturers/LecturersPage';
 import { ProgramsPage as StaffProgramsPage } from '@/features/staff/programs/ProgramsPage';
+import { ProgramYearsPage } from '@/features/staff/program-years/ProgramYearsPage';
+import { StreamsPage } from '@/features/staff/streams/StreamsPage';
 
 export function AppRouter() {
   return (
@@ -61,6 +63,8 @@ export function AppRouter() {
                 <Route path="timetable" element={<TimetablePage />} />
                 <Route path="modules" element={<ModulesPage />} />
                 <Route path="programs" element={<StaffProgramsPage />} />
+                <Route path="program-years" element={<ProgramYearsPage />} />
+                <Route path="streams" element={<StreamsPage />} />
                 <Route path="lecturers" element={<StaffLecturersPage />} />
                 <Route path="module-lecturers" element={<ModuleLecturersPage />} />
                 <Route path="submissions" element={<SubmissionsPage />} />

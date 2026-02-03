@@ -20,8 +20,12 @@ export interface Program {
 
 export interface ProgramYear {
   id: string;
+  program?: string;
+  program_name?: string;
+  program_code?: string;
   year_number: number;
-  year_name: string;
+  name?: string;
+  year_name?: string;
   is_active: boolean;
   streams: ProgramStream[];
 }

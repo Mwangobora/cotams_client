@@ -83,7 +83,7 @@ export function SessionFormDialog({
     queryFn: () => timetableApi.getStreams(),
     enabled: open
   });
-  const streams = Array.isArray(streamsResponse) ? streamsResponse : streamsResponse?.results || [];
+  const streams = Array.isArray(streamsResponse) ? streamsResponse : (streamsResponse as any)?.results || [];
 
   const { data: assignmentsResponse } = useQuery({
     queryKey: ['module-lecturers'],

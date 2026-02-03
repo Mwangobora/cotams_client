@@ -106,7 +106,7 @@ export function ProgramDetailsDialog({
                     {program.program_years.map((year) => (
                       <TableRow key={year.id}>
                         <TableCell>{year.year_number}</TableCell>
-                        <TableCell>{year.year_name}</TableCell>
+                        <TableCell>{year.name || year.year_name || '—'}</TableCell>
                         <TableCell>{year.streams?.length || 0}</TableCell>
                         <TableCell>
                           <Badge variant={year.is_active ? 'default' : 'secondary'}>

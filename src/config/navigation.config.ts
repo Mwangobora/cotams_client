@@ -93,6 +93,8 @@ const staffNavItems: NavGroup[] = [
     items: [
       { title: 'Timetable', href: '/timetable', icon: Calendar },
       { title: 'Programs', href: '/programs', icon: GraduationCap },
+      { title: 'Program Years', href: '/program-years', icon: ClipboardList },
+      { title: 'Streams', href: '/streams', icon: Users },
       { title: 'Modules', href: '/modules', icon: BookOpen },
       { title: 'Lecturers', href: '/lecturers', icon: UserCheck },
       { title: 'Curriculum', href: '/curriculum', icon: ClipboardList },
