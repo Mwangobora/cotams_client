@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { SessionsApi } from '@/apis/SessionsApi';
-import type { Session, SessionFormData, DayOfWeek, SessionType } from '@/types/sessions';
+import type { Session, SessionFormData, DayOfWeek, SessionType, Semester } from '@/types/sessions';
 import { useSessionFormState } from './useSessionFormState';
 import { useSessionOptions } from './useSessionOptions';
 import { useSessionAssignments } from './useSessionAssignments';
@@ -113,6 +113,10 @@ export function useSessionFormController({
       state.setFormData((prev) => ({ ...prev, day_of_week: value })),
     setSessionType: (value: SessionType) =>
       state.setFormData((prev) => ({ ...prev, session_type: value })),
+    setAcademicYear: (value: string) =>
+      state.setFormData((prev) => ({ ...prev, academic_year: value })),
+    setSemester: (value: Semester) =>
+      state.setFormData((prev) => ({ ...prev, semester: value })),
     setStartTime: (value: string) => state.setFormData((prev) => ({ ...prev, start_time: value })),
     setEndTime: (value: string) => state.setFormData((prev) => ({ ...prev, end_time: value })),
   };

@@ -20,7 +20,8 @@ interface UseSessionFormStateResult {
 }
 
 export function useSessionFormState({ session, open }: UseSessionFormStateParams): UseSessionFormStateResult {
-  const currentYear = new Date().getFullYear().toString();
+  const baseYear = new Date().getFullYear();
+  const currentYear = `${baseYear}/${baseYear + 1}`;
   const [formData, setFormData] = useState<SessionFormData>({
     stream: '',
     module: '',

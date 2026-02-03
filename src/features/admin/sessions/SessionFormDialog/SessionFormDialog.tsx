@@ -51,10 +51,14 @@ export function SessionFormDialog({ open, onOpenChange, session }: SessionFormDi
       onRoomChange={controller.setRoom}
       dayOfWeek={controller.state.formData.day_of_week}
       sessionType={controller.state.formData.session_type}
+      academicYear={controller.state.formData.academic_year}
+      semester={controller.state.formData.semester}
       startTime={controller.state.formData.start_time}
       endTime={controller.state.formData.end_time}
       onDayChange={controller.setDayOfWeek}
       onTypeChange={controller.setSessionType}
+      onAcademicYearChange={controller.setAcademicYear}
+      onSemesterChange={controller.setSemester}
       onStartTimeChange={controller.setStartTime}
       onEndTimeChange={controller.setEndTime}
     />

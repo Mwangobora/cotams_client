@@ -8,56 +8,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import type { Session, DayOfWeek, SessionType } from '@/types/sessions';
-import type { Program, ProgramYear } from '@/types/programs';
-import type { Stream } from '@/types/streams';
 import { ProgramStreamSelector } from './ProgramStreamSelector';
 import { LecturerModuleSelector } from './LecturerModuleSelector';
 import { RoomSelector } from './RoomSelector';
 import { ScheduleFields } from './ScheduleFields';
-
-interface SessionFormDialogViewProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  session?: Session | null;
-  clashError: string;
-  onSubmit: (e: React.FormEvent) => void;
-  saving: boolean;
-  programs: Program[];
-  programYears: ProgramYear[];
-  streams: Stream[];
-  selectedProgram: string;
-  selectedProgramYear: string;
-  selectedStream: string;
-  onProgramChange: (value: string) => void;
-  onProgramYearChange: (value: string) => void;
-  onStreamChange: (value: string) => void;
-  lecturerOptions: Array<{ id: string; name: string }>;
-  moduleOptionsForLecturer: Array<{
-    id: string;
-    module: string;
-    module_name?: string;
-    module_code?: string;
-    source?: 'LIVE' | 'PENDING';
-  }>;
-  selectedLecturer: string;
-  selectedModule: string;
-  selectedAssignmentName: string;
-  selectedLecturerName: string;
-  onLecturerChange: (value: string) => void;
-  onModuleChange: (value: string) => void;
-  rooms: Array<{ id: string; name: string; capacity?: number }>;
-  selectedRoom: string;
-  onRoomChange: (value: string) => void;
-  dayOfWeek: DayOfWeek;
-  sessionType: SessionType;
-  startTime: string;
-  endTime: string;
-  onDayChange: (value: DayOfWeek) => void;
-  onTypeChange: (value: SessionType) => void;
-  onStartTimeChange: (value: string) => void;
-  onEndTimeChange: (value: string) => void;
-}
+import type { SessionFormDialogViewProps } from './SessionFormDialogView.types';
 
 export function SessionFormDialogView({
   open,
@@ -88,10 +43,14 @@ export function SessionFormDialogView({
   onRoomChange,
   dayOfWeek,
   sessionType,
+  academicYear,
+  semester,
   startTime,
   endTime,
   onDayChange,
   onTypeChange,
+  onAcademicYearChange,
+  onSemesterChange,
   onStartTimeChange,
   onEndTimeChange,
 }: SessionFormDialogViewProps) {
@@ -137,10 +96,14 @@ export function SessionFormDialogView({
             <ScheduleFields
               dayOfWeek={dayOfWeek}
               sessionType={sessionType}
+              academicYear={academicYear}
+              semester={semester}
               startTime={startTime}
               endTime={endTime}
               onDayChange={onDayChange}
               onTypeChange={onTypeChange}
+              onAcademicYearChange={onAcademicYearChange}
+              onSemesterChange={onSemesterChange}
               onStartTimeChange={onStartTimeChange}
               onEndTimeChange={onEndTimeChange}
             />

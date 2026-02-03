@@ -56,15 +56,17 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
   };
 
   const resetFilters = () => {
-    const currentYear = new Date().getFullYear().toString();
+    const year = new Date().getFullYear();
     onFiltersChange({
-      academic_year: currentYear,
+      academic_year: `${year}/${year + 1}`,
       semester: 'SEMESTER_1',
     });
   };
 
   const currentYear = new Date().getFullYear();
-  const academicYears = Array.from({ length: 5 }, (_, i) => `${currentYear + i - 2}`);
+  const academicYears = Array.from({ length: 5 }, (_, i) => currentYear + i - 2).map(
+    (year) => `${year}/${year + 1}`
+  );
 
   const departmentFilter = selectedDepartment === '__all' ? '' : selectedDepartment;
   const programFilter = selectedProgram === '__all' ? '' : selectedProgram;
@@ -128,14 +130,17 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
         {/* Academic Year - Always visible */}
         <div className="space-y-2">
           <Label>Academic Year</Label>
-          <Select value={filters.academic_year || ''} onValueChange={(value) => updateFilter('academic_year', value)}>
+          <Select
+            value={filters.academic_year || ''}
+            onValueChange={(value) => updateFilter('academic_year', value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select year" />
             </SelectTrigger>
             <SelectContent>
               {academicYears.map((year) => (
                 <SelectItem key={year} value={year}>
-                  {year}/{parseInt(year) + 1}
+                  {year}
                 </SelectItem>
               ))}
             </SelectContent>

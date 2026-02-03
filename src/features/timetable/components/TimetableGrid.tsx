@@ -12,6 +12,12 @@ interface TimetableGridProps {
 }
 
 export function TimetableGrid({ sessions }: TimetableGridProps) {
+  const getSlotForSession = (startTime: string) => {
+    const hour = startTime?.slice(0, 2);
+    if (!hour || Number.isNaN(Number(hour))) return startTime;
+    return `${hour}:00`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -42,7 +48,7 @@ export function TimetableGrid({ sessions }: TimetableGridProps) {
               {DAYS.map((day) => (
                 <div key={`${day.code}-${timeSlot}`} className="relative p-2 border-r">
                   {sessions[day.code]
-                    ?.filter(session => session.start_time === timeSlot)
+                    ?.filter(session => getSlotForSession(session.start_time) === timeSlot)
                     ?.map(session => (
                       <SessionCard
                         key={session.id}

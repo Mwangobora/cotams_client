@@ -1,0 +1,50 @@
+import type { Session, DayOfWeek, SessionType, Semester } from '@/types/sessions';
+import type { Program, ProgramYear } from '@/types/programs';
+import type { Stream } from '@/types/streams';
+
+export interface SessionFormDialogViewProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  session?: Session | null;
+  clashError: string;
+  onSubmit: (e: React.FormEvent) => void;
+  saving: boolean;
+  programs: Program[];
+  programYears: ProgramYear[];
+  streams: Stream[];
+  selectedProgram: string;
+  selectedProgramYear: string;
+  selectedStream: string;
+  onProgramChange: (value: string) => void;
+  onProgramYearChange: (value: string) => void;
+  onStreamChange: (value: string) => void;
+  lecturerOptions: Array<{ id: string; name: string }>;
+  moduleOptionsForLecturer: Array<{
+    id: string;
+    module: string;
+    module_name?: string;
+    module_code?: string;
+    source?: 'LIVE' | 'PENDING';
+  }>;
+  selectedLecturer: string;
+  selectedModule: string;
+  selectedAssignmentName: string;
+  selectedLecturerName: string;
+  onLecturerChange: (value: string) => void;
+  onModuleChange: (value: string) => void;
+  rooms: Array<{ id: string; name: string; capacity?: number }>;
+  selectedRoom: string;
+  onRoomChange: (value: string) => void;
+  dayOfWeek: DayOfWeek;
+  sessionType: SessionType;
+  academicYear: string;
+  semester: Semester;
+  startTime: string;
+  endTime: string;
+  onDayChange: (value: DayOfWeek) => void;
+  onTypeChange: (value: SessionType) => void;
+  onAcademicYearChange: (value: string) => void;
+  onSemesterChange: (value: Semester) => void;
+  onStartTimeChange: (value: string) => void;
+  onEndTimeChange: (value: string) => void;
+}
