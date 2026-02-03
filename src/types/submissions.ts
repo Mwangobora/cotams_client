@@ -29,6 +29,13 @@ export interface SubmissionModuleLecturerItem {
   proposed_semester?: number | null;
   proposed_is_primary?: boolean;
   is_applied: boolean;
+  proposed_module_code?: string;
+  proposed_module_name?: string;
+  proposed_module_department_name?: string;
+  proposed_module_department_code?: string;
+  proposed_lecturer_name?: string;
+  proposed_lecturer_department_name?: string;
+  proposed_module_programs?: Array<{ id: string; code: string; name: string }>;
 }
 
 export interface AcademicSubmission {
