@@ -27,11 +27,13 @@ import { ModuleLecturersApi } from '@/apis/ModuleLecturersApi';
 import { SubmissionsApi } from '@/apis/SubmissionsApi';
 import { ModulesApi } from '@/apis/ModulesApi';
 import { LecturersApi } from '@/apis/LecturersApi';
+import { TimetableApi } from '@/apis/TimetableApi';
 import type { ModuleLecturerAssignment } from '@/types/module-lecturers';
 import type { AcademicSubmission } from '@/types/submissions';
 import type { Module } from '@/types/modules';
 import type { Lecturer } from '@/types/lecturers';
 import type { Session, SessionFormData, DayOfWeek, SessionType, Semester } from '@/types/sessions';
+import type { Stream } from '@/features/timetable/types';
 
 interface SessionFormDialogProps {
   open: boolean;
@@ -66,6 +68,7 @@ export function SessionFormDialog({
   const submissionsApi = new SubmissionsApi();
   const modulesApi = new ModulesApi();
   const lecturersApi = new LecturersApi();
+  const timetableApi = new TimetableApi();
 
   // Fetch options for dropdowns
   const { data: roomsResponse } = useQuery({
@@ -74,6 +77,13 @@ export function SessionFormDialog({
     enabled: open
   });
   const rooms = Array.isArray(roomsResponse) ? roomsResponse : roomsResponse?.results || [];
+
+  const { data: streamsResponse } = useQuery({
+    queryKey: ['streams'],
+    queryFn: () => timetableApi.getStreams(),
+    enabled: open
+  });
+  const streams = Array.isArray(streamsResponse) ? streamsResponse : streamsResponse?.results || [];
 
   const { data: assignmentsResponse } = useQuery({
     queryKey: ['module-lecturers'],
@@ -355,6 +365,30 @@ export function SessionFormDialog({
                   />
                 </div>
               </div>
+            </div>
+
+            <div>
+              <Label>Stream</Label>
+              <Select
+                value={formData.stream}
+                onValueChange={(value) => setFormData((prev) => ({ ...prev, stream: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select stream" />
+                </SelectTrigger>
+                <SelectContent>
+                  {streams.length === 0 && (
+                    <SelectItem value="__none" disabled>
+                      No streams found
+                    </SelectItem>
+                  )}
+                  {streams.map((stream: Stream) => (
+                    <SelectItem key={stream.id} value={stream.id}>
+                      {stream.stream_code} {stream.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>

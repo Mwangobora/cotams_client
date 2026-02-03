@@ -32,6 +32,11 @@ export function ProgramsPage() {
       accessor: 'code' as keyof Program
     },
     {
+      header: 'Department',
+      accessor: (program: Program) =>
+        program.department_name || program.department_code || program.department || '—'
+    },
+    {
       header: 'Duration',
       accessor: (program: Program) => `${program.duration_years} years`
     },

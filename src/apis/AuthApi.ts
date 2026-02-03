@@ -32,10 +32,10 @@ export class AuthApi {
     try {
       const response = await axios.post<LoginResponse>(`${this.basePath}/login/`, data);
       if (response.data?.access) {
-        Cookies.set('access_token', response.data.access);
+        Cookies.set('access_token', response.data.access, { path: '/' });
       }
       if (response.data?.refresh) {
-        Cookies.set('refresh_token', response.data.refresh);
+        Cookies.set('refresh_token', response.data.refresh, { path: '/' });
       }
       return response.data;
     } catch (error) {
@@ -50,8 +50,8 @@ export class AuthApi {
   async logout(): Promise<void> {
     try {
       await axios.post(`${this.basePath}/logout/`);
-      Cookies.remove('access_token');
-      Cookies.remove('refresh_token');
+      Cookies.remove('access_token', { path: '/' });
+      Cookies.remove('refresh_token', { path: '/' });
     } catch (error) {
       throw normalizeAxiosError(error);
     }

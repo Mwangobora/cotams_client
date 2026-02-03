@@ -61,6 +61,14 @@ export function ProgramDetailsDialog({
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">
+                    Department
+                  </label>
+                  <p className="text-sm">
+                    {program.department_name || program.department_code || program.department || '—'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">
                     Duration
                   </label>
                   <p className="text-sm">{program.duration_years} years</p>

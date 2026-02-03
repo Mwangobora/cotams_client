@@ -7,7 +7,11 @@ export interface Program {
   code: string;
   name: string;
   description: string;
+  department: string;
+  department_name?: string;
+  department_code?: string;
   duration_years: number;
+  level?: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -34,7 +38,9 @@ export interface ProgramFormData {
   code: string;
   name: string;
   description: string;
+  department?: string;
   duration_years: number;
+  level: string;
   is_active: boolean;
 }
 

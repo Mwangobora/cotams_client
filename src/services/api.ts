@@ -44,7 +44,7 @@ axiosInstance.interceptors.response.use(
           });
 
           const { access } = response.data;
-          Cookies.set('access_token', access);
+          Cookies.set('access_token', access, { path: '/' });
 
           // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${access}`;
@@ -52,8 +52,8 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         // Refresh failed, clear tokens and redirect to login
-        Cookies.remove('access_token');
-        Cookies.remove('refresh_token');
+        Cookies.remove('access_token', { path: '/' });
+        Cookies.remove('refresh_token', { path: '/' });
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
