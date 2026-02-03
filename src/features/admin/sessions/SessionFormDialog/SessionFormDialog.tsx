@@ -27,13 +27,16 @@ import { ModuleLecturersApi } from '@/apis/ModuleLecturersApi';
 import { SubmissionsApi } from '@/apis/SubmissionsApi';
 import { ModulesApi } from '@/apis/ModulesApi';
 import { LecturersApi } from '@/apis/LecturersApi';
-import { TimetableApi } from '@/apis/TimetableApi';
+import { ProgramsApi } from '@/apis/ProgramsApi';
+import { ProgramYearsApi } from '@/apis/ProgramYearsApi';
+import { StreamsApi } from '@/apis/StreamsApi';
 import type { ModuleLecturerAssignment } from '@/types/module-lecturers';
 import type { AcademicSubmission } from '@/types/submissions';
 import type { Module } from '@/types/modules';
 import type { Lecturer } from '@/types/lecturers';
 import type { Session, SessionFormData, DayOfWeek, SessionType, Semester } from '@/types/sessions';
-import type { Stream } from '@/features/timetable/types';
+import type { Program, ProgramYear } from '@/types/programs';
+import type { Stream } from '@/types/streams';
 
 interface SessionFormDialogProps {
   open: boolean;
@@ -61,6 +64,8 @@ export function SessionFormDialog({
   });
   const [clashError, setClashError] = useState<string>('');
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('');
+  const [selectedProgram, setSelectedProgram] = useState<string>('');
+  const [selectedProgramYear, setSelectedProgramYear] = useState<string>('');
   
   const queryClient = useQueryClient();
   const sessionsApi = new SessionsApi();
@@ -69,7 +74,9 @@ export function SessionFormDialog({
   const submissionsApi = new SubmissionsApi();
   const modulesApi = new ModulesApi();
   const lecturersApi = new LecturersApi();
-  const timetableApi = new TimetableApi();
+  const programsApi = new ProgramsApi();
+  const programYearsApi = new ProgramYearsApi();
+  const streamsApi = new StreamsApi();
 
   // Fetch options for dropdowns
   const { data: roomsResponse } = useQuery({
@@ -79,12 +86,34 @@ export function SessionFormDialog({
   });
   const rooms = Array.isArray(roomsResponse) ? roomsResponse : roomsResponse?.results || [];
 
-  const { data: streamsResponse } = useQuery({
-    queryKey: ['streams'],
-    queryFn: () => timetableApi.getStreams(),
+  const { data: programsResponse } = useQuery({
+    queryKey: ['programs'],
+    queryFn: () => programsApi.getPrograms(),
     enabled: open
   });
-  const streams = Array.isArray(streamsResponse) ? streamsResponse : (streamsResponse as any)?.results || [];
+  const programs = Array.isArray(programsResponse)
+    ? programsResponse
+    : programsResponse?.results || [];
+
+  const { data: programYearsResponse } = useQuery({
+    queryKey: ['program-years', selectedProgram],
+    queryFn: () =>
+      programYearsApi.getProgramYears(selectedProgram ? { program: selectedProgram } : {}),
+    enabled: open
+  });
+  const programYears = Array.isArray(programYearsResponse)
+    ? programYearsResponse
+    : programYearsResponse?.results || [];
+
+  const { data: streamsResponse } = useQuery({
+    queryKey: ['streams', selectedProgramYear],
+    queryFn: () =>
+      streamsApi.getStreams(selectedProgramYear ? { program_year: selectedProgramYear } : {}),
+    enabled: open
+  });
+  const streams = Array.isArray(streamsResponse)
+    ? streamsResponse
+    : streamsResponse?.results || [];
 
   const { data: assignmentsResponse } = useQuery({
     queryKey: ['module-lecturers'],
@@ -238,6 +267,8 @@ export function SessionFormDialog({
         semester: 'SEMESTER_1' as Semester
       });
       setSelectedAssignmentId('');
+      setSelectedProgram('');
+      setSelectedProgramYear('');
     }
     setClashError('');
   }, [session, open]);
@@ -272,6 +303,103 @@ export function SessionFormDialog({
               </Alert>
             )}
 
+            <div className="grid gap-4 lg:grid-cols-3">
+              <div>
+                <Label>Program</Label>
+                <Select
+                  value={selectedProgram}
+                  onValueChange={(value) => {
+                    setSelectedProgram(value);
+                    setSelectedProgramYear('');
+                    setFormData((prev) => ({
+                      ...prev,
+                      stream: '',
+                      module: '',
+                      lecturer: '',
+                    }));
+                    setSelectedAssignmentId('');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select program" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programs.length === 0 && (
+                      <SelectItem value="__none" disabled>
+                        No programs found
+                      </SelectItem>
+                    )}
+                    {programs.map((program: Program) => (
+                      <SelectItem key={program.id} value={program.id}>
+                        {program.code} - {program.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Year of Study</Label>
+                <Select
+                  value={selectedProgramYear}
+                  onValueChange={(value) => {
+                    setSelectedProgramYear(value);
+                    setFormData((prev) => ({
+                      ...prev,
+                      stream: '',
+                      module: '',
+                      lecturer: '',
+                    }));
+                    setSelectedAssignmentId('');
+                  }}
+                  disabled={!selectedProgram}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programYears.length === 0 && (
+                      <SelectItem value="__none" disabled>
+                        No program years found
+                      </SelectItem>
+                    )}
+                    {programYears.map((year: ProgramYear) => (
+                      <SelectItem key={year.id} value={year.id}>
+                        Year {year.year_number} {year.name ? `- ${year.name}` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Stream</Label>
+                <Select
+                  value={formData.stream}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, stream: value }))
+                  }
+                  disabled={!selectedProgramYear}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select stream" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {streams.length === 0 && (
+                      <SelectItem value="__none" disabled>
+                        No streams found
+                      </SelectItem>
+                    )}
+                    {streams.map((stream: Stream) => (
+                      <SelectItem key={stream.id} value={stream.id}>
+                        {stream.stream_code} {stream.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="space-y-4">
                 <div>
@@ -294,6 +422,7 @@ export function SessionFormDialog({
                         setSelectedAssignmentId(only.id);
                       }
                     }}
+                    disabled={!formData.stream}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select lecturer" />
@@ -366,30 +495,6 @@ export function SessionFormDialog({
                   />
                 </div>
               </div>
-            </div>
-
-            <div>
-              <Label>Stream</Label>
-              <Select
-                value={formData.stream}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, stream: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select stream" />
-                </SelectTrigger>
-                <SelectContent>
-                  {streams.length === 0 && (
-                    <SelectItem value="__none" disabled>
-                      No streams found
-                    </SelectItem>
-                  )}
-                  {streams.map((stream: Stream) => (
-                    <SelectItem key={stream.id} value={stream.id}>
-                      {stream.stream_code} {stream.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             <div>
