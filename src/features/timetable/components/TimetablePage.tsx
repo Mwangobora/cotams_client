@@ -23,7 +23,14 @@ import type { TimetableFilters as FilterType, DayOfWeek, SessionsByDay } from '.
 
 export function TimetablePage() {
   const { user } = useAuthStore();
-  const [filters, setFilters] = useState<FilterType>({});
+  
+  // Initialize filters with current academic year and semester
+  const currentYear = new Date().getFullYear();
+  const [filters, setFilters] = useState<FilterType>({
+    academic_year: `${currentYear}/${currentYear + 1}`,
+    semester: 'SEMESTER_1',
+  });
+  
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>('MON');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 

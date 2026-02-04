@@ -57,6 +57,9 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
 
   const resetFilters = () => {
     const year = new Date().getFullYear();
+    setSelectedDepartment('__all');
+    setSelectedProgram('__all');
+    setSelectedProgramYear('__all');
     onFiltersChange({
       academic_year: `${year}/${year + 1}`,
       semester: 'SEMESTER_1',
@@ -109,14 +112,17 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     ? streamsResponse
     : streamsResponse?.results || [];
 
+  // Auto-select stream only if user explicitly selects a program year (not on initial load)
+  // This prevents forcing a filter that might hide all sessions
   useEffect(() => {
     if (!showStreamSelectors) return;
+    if (selectedProgramYear === '__all') return; // Don't auto-select if "All years" is selected
     if (!selectedProgramYear) return;
-    if (filters.stream) return;
+    if (filters.stream && filters.stream !== '__all') return; // Don't override existing selection
     if (streams.length > 0) {
       updateFilter('stream', streams[0].id);
     }
-  }, [showStreamSelectors, selectedProgramYear, streams, filters.stream]);
+  }, [selectedProgramYear, streams]);
 
   const programYearLabelMap = useMemo(() => {
     return new Map(
