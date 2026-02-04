@@ -40,9 +40,35 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
   const programYearsApi = new ProgramYearsApi();
   const streamsApi = new StreamsApi();
 
-  const [selectedDepartment, setSelectedDepartment] = useState<string>('__all');
-  const [selectedProgram, setSelectedProgram] = useState<string>('__all');
-  const [selectedProgramYear, setSelectedProgramYear] = useState<string>('__all');
+  // Load saved selections from localStorage
+  const [selectedDepartment, setSelectedDepartment] = useState<string>(
+    () => localStorage.getItem('timetable_department') || '__all'
+  );
+  const [selectedProgram, setSelectedProgram] = useState<string>(
+    () => localStorage.getItem('timetable_program') || '__all'
+  );
+  const [selectedProgramYear, setSelectedProgramYear] = useState<string>(
+    () => localStorage.getItem('timetable_program_year') || '__all'
+  );
+
+  // Save selections to localStorage
+  useEffect(() => {
+    if (selectedProgram !== '__all') {
+      localStorage.setItem('timetable_program', selectedProgram);
+    }
+  }, [selectedProgram]);
+
+  useEffect(() => {
+    if (selectedProgramYear !== '__all') {
+      localStorage.setItem('timetable_program_year', selectedProgramYear);
+    }
+  }, [selectedProgramYear]);
+
+  useEffect(() => {
+    if (selectedDepartment !== '__all') {
+      localStorage.setItem('timetable_department', selectedDepartment);
+    }
+  }, [selectedDepartment]);
 
   // Queries for dropdown options (only load when authenticated and needed)
   const { data: rooms = [], isLoading: loadingRooms } = useRoomsQuery({ enabled: isAuthenticated && isAdmin });
@@ -60,6 +86,10 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     setSelectedDepartment('__all');
     setSelectedProgram('__all');
     setSelectedProgramYear('__all');
+    // Clear localStorage
+    localStorage.removeItem('timetable_department');
+    localStorage.removeItem('timetable_program');
+    localStorage.removeItem('timetable_program_year');
     onFiltersChange({
       academic_year: `${year}/${year + 1}`,
       semester: 'SEMESTER_1',
