@@ -61,6 +61,14 @@ export class ProgramYearsApi {
       throw normalizeAxiosError(error);
     }
   }
+
+  async deleteProgramYear(id: string): Promise<void> {
+    try {
+      await axios.delete(API_ENDPOINTS.academics.programYearDetail(id));
+    } catch (error) {
+      throw normalizeAxiosError(error);
+    }
+  }
 }
 
 export const programYearsApi = new ProgramYearsApi();

@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -44,6 +45,7 @@ export function ProgramYearsPage() {
 
   const [selected, setSelected] = useState<ProgramYear | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [formData, setFormData] = useState<ProgramYearFormState>({
     program: '',
@@ -97,6 +99,18 @@ export function ProgramYearsPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => programYearsApi.deleteProgramYear(id),
+    onSuccess: () => {
+      toast.success('Program year deleted');
+      queryClient.invalidateQueries({ queryKey: ['program-years'] });
+      setDeleteOpen(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete program year');
+    },
+  });
+
   const columns = useMemo(
     () => [
       {
@@ -137,6 +151,11 @@ export function ProgramYearsPage() {
       is_active: year.is_active,
     });
     setDialogOpen(true);
+  };
+
+  const openDelete = (year: ProgramYear) => {
+    setSelected(year);
+    setDeleteOpen(true);
   };
 
   const handleSubmit = () => {
@@ -189,8 +208,10 @@ export function ProgramYearsPage() {
         loading={isLoading}
         onAdd={openCreate}
         onEdit={openEdit}
+        onDelete={openDelete}
         actions
         editButtonText="Edit"
+        deleteButtonText="Delete"
         emptyMessage="No program years found"
       />
 
@@ -267,6 +288,16 @@ export function ProgramYearsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete Program Year"
+        description={`Delete ${selected?.name || `Year ${selected?.year_number || ''}` || 'this year'}? This cannot be undone.`}
+        confirmText="Delete"
+        loading={deleteMutation.isPending}
+        onConfirm={() => selected && deleteMutation.mutate(selected.id)}
+      />
     </>
   );
 }
