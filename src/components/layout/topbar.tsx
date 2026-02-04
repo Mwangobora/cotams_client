@@ -1,4 +1,4 @@
-import { Bell, User, LogOut, Settings } from 'lucide-react';
+import { Bell, User, LogOut, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MobileSidebar } from './mobile-sidebar';
 import { type NavGroup } from '@/config/navigation.config';
@@ -17,17 +16,39 @@ import { Link } from 'react-router-dom';
 
 interface TopbarProps {
   navigation: NavGroup[];
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
-export function Topbar({ navigation }: TopbarProps) {
+export function Topbar({ navigation, isSidebarOpen, onToggleSidebar }: TopbarProps) {
   const { user, logout } = useAuthStore();
   const unreadNotifications = 0; // TODO: Get from notifications store
+  const roles = user?.roles?.map((role) => role.code) || [];
+  const getBasePath = () => {
+    if (roles.includes('ADMIN')) return '/admin';
+    if (roles.includes('STAFF')) return '/staff';
+    if (roles.includes('LECTURER')) return '/lecturer';
+    return '/student';
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
         {/* Mobile Menu */}
         <MobileSidebar navigation={navigation} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden lg:inline-flex"
+          onClick={onToggleSidebar}
+        >
+          {isSidebarOpen ? (
+            <PanelLeftClose className="h-5 w-5" />
+          ) : (
+            <PanelLeftOpen className="h-5 w-5" />
+          )}
+          <span className="sr-only">Toggle sidebar</span>
+        </Button>
 
         {/* Spacer */}
         <div className="flex-1" />
@@ -72,7 +93,7 @@ export function Topbar({ navigation }: TopbarProps) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/profile">
+                <Link to={`${getBasePath()}/profile`}>
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </Link>
@@ -92,6 +113,7 @@ export function Topbar({ navigation }: TopbarProps) {
           </DropdownMenu>
         </div>
       </div>
+
     </header>
   );
 }

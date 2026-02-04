@@ -31,37 +31,53 @@
 @layer base {
   :root {
     /* Light theme - Clean, professional with zinc tones */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 0 0% 100%;  /* Pure white for main background */
+    --foreground: 222 47% 11%;  /* #111827 (gray-900) - Primary text */
     
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    /* Cards: Soft zinc background */
+    --card: 240 5% 96%;  /* #F4F4F5 (zinc-100) - Card background */
+    --card-foreground: 222 47% 11%;  /* #111827 - Primary text on cards */
     
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 222 47% 11%;
     
-    /* Primary brand color: #0E21A0 */
+    /* Primary brand color: #0E21A0 - Use sparingly for main actions only */
     --primary: 229 88% 35%;
     --primary-foreground: 0 0% 100%;
     
-    /* Secondary using zinc tones */
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Secondary text: #374151 (gray-700) */
+    --secondary: 220 14% 96%;  /* Light background for secondary elements */
+    --secondary-foreground: 217 19% 27%;  /* #374151 - Secondary text */
     
-    /* Muted zinc backgrounds for cards/sections */
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    /* Muted text/labels: #6B7280 (gray-500) */
+    --muted: 240 5% 96%;  /* Zinc-100 for muted backgrounds */
+    --muted-foreground: 220 9% 46%;  /* #6B7280 - Muted text */
     
-    /* Accent using lighter zinc */
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* Accent for highlights and badges */
+    --accent: 226 100% 94%;  /* #E0E7FF (indigo-100) - Soft blue accent background */
+    --accent-foreground: 230 81% 35%;  /* #1E3A8A - Accent text */
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 229 88% 35%;
+    /* Borders: zinc-200 */
+    --border: 240 6% 90%;  /* #E4E4E7 (zinc-200) */
+    --input: 240 6% 90%;
+    --ring: 229 88% 35%;  /* Primary color for focus rings */
+    
+    /* Sidebar specific colors */
+    --sidebar-background: 214 32% 98%;  /* #F8FAFC (slate-50) */
+    --sidebar-border: 220 13% 91%;  /* #E5E7EB (gray-200) */
+    --sidebar-text: 215 16% 47%;  /* #475569 (slate-600) - Default icon/text */
+    --sidebar-text-hover: 216 28% 17%;  /* #1E293B (slate-800) - Hover text */
+    --sidebar-text-muted: 214 20% 69%;  /* #94A3B8 (slate-400) - Disabled */
+    --sidebar-active-bg: 226 100% 94%;  /* #E0E7FF (indigo-100) - Active background */
+    --sidebar-active-border: 229 88% 35%;  /* #0E21A0 - Active border indicator */
+    
+    /* Icon hierarchy colors */
+    --icon-default: 215 16% 47%;  /* #475569 (slate-600) - Default icons */
+    --icon-secondary: 215 14% 59%;  /* #64748B (slate-500) - Secondary icons */
+    --icon-active: 229 88% 35%;  /* #0E21A0 - Active/highlighted icons */
     
     --radius: 0.5rem;
     
@@ -104,6 +120,20 @@
     --input: 228 20% 35%;
     --ring: 229 88% 50%;
     
+    /* Sidebar colors for dark theme */
+    --sidebar-background: 228 24% 25%;
+    --sidebar-border: 228 20% 35%;
+    --sidebar-text: 0 0% 100%;  /* White text for dark theme */
+    --sidebar-text-hover: 0 0% 98%;
+    --sidebar-text-muted: 214 20% 69%;
+    --sidebar-active-bg: 228 20% 35%;
+    --sidebar-active-border: 0 0% 100%;  /* White active indicator */
+    
+    /* Icon hierarchy colors - same as light theme */
+    --icon-default: 215 16% 47%;  /* #475569 (slate-600) */
+    --icon-secondary: 215 14% 59%;  /* #64748B (slate-500) */
+    --icon-active: 229 88% 45%;  /* Adjusted for dark mode */
+    
     --chart-1: 229 88% 55%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -134,6 +164,23 @@
   }
 }
 
+@layer base {
+  a,
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    cursor: pointer;
+  }
+
+  input:disabled,
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 /* Custom scrollbar for better UX */
 @layer utilities {
   .scrollbar-thin::-webkit-scrollbar {
@@ -151,5 +198,43 @@
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/50;
+  }
+  
+  /* Icon hierarchy utility classes */
+  .icon-default {
+    color: hsl(var(--icon-default));
+  }
+  
+  .icon-secondary {
+    color: hsl(var(--icon-secondary));
+  }
+  
+  .icon-active {
+    color: hsl(var(--icon-active));
+  }
+  
+  /* Text hierarchy utility classes */
+  .text-primary-hierarchy {
+    color: #111827;  /* gray-900 */
+  }
+  
+  .text-secondary-hierarchy {
+    color: #374151;  /* gray-700 */
+  }
+  
+  .text-muted-hierarchy {
+    color: #6B7280;  /* gray-500 */
+  }
+  
+  /* Info badge utility */
+  .badge-info {
+    background-color: #EEF2FF;
+    color: #3730A3;
+  }
+  
+  /* Soft accent badge */
+  .badge-accent {
+    background-color: #E0E7FF;
+    color: #1E3A8A;
   }
 }

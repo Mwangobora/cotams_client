@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 import { getNavigationForRole } from '@/config/navigation.config';
@@ -17,6 +17,7 @@ interface AppShellProps {
  */
 export function AppShell({ children }: AppShellProps) {
   const { user } = useAuthStore();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Get navigation based on user roles
   const userRoles = user?.roles?.map(r => r.code) || ['STUDENT'];
@@ -25,13 +26,19 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col">
-        <Sidebar navigation={navigation} />
-      </aside>
+      {sidebarOpen && (
+        <aside className="hidden lg:flex lg:w-64 lg:flex-col">
+          <Sidebar navigation={navigation} />
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar navigation={navigation} />
+        <Topbar
+          navigation={navigation}
+          isSidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+        />
         
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-muted/10">

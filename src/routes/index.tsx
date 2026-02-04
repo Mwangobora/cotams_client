@@ -24,6 +24,7 @@ import { LecturersPage as StaffLecturersPage } from '@/features/staff/lecturers/
 import { ProgramsPage as StaffProgramsPage } from '@/features/staff/programs/ProgramsPage';
 import { ProgramYearsPage } from '@/features/staff/program-years/ProgramYearsPage';
 import { StreamsPage } from '@/features/staff/streams/StreamsPage';
+import { ProfilePage } from '@/pages/profile/ProfilePage';
 
 export function AppRouter() {
   return (
@@ -46,6 +47,7 @@ export function AppRouter() {
                 <Route path="lecturers" element={<LecturersPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
                 <Route path="submissions" element={<SubmissionsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </AppShell>
@@ -68,6 +70,7 @@ export function AppRouter() {
                 <Route path="lecturers" element={<StaffLecturersPage />} />
                 <Route path="module-lecturers" element={<ModuleLecturersPage />} />
                 <Route path="submissions" element={<SubmissionsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="*" element={<Navigate to="/staff" replace />} />
               </Routes>
             </AppShell>
@@ -83,6 +86,7 @@ export function AppRouter() {
               <Routes>
                 <Route index element={<LecturerDashboard />} />
                 <Route path="timetable" element={<TimetablePage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="*" element={<Navigate to="/lecturer" replace />} />
               </Routes>
             </AppShell>
@@ -98,6 +102,7 @@ export function AppRouter() {
               <Routes>
                 <Route index element={<StudentDashboard />} />
                 <Route path="timetable" element={<TimetablePage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="*" element={<Navigate to="/student" replace />} />
               </Routes>
             </AppShell>

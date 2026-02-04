@@ -24,9 +24,9 @@ export function Sidebar({ navigation, className }: SidebarProps) {
   };
 
   return (
-    <div className={cn('flex h-full flex-col border-r bg-card', className)}>
+    <div className={cn('flex h-full flex-col border-r', className)} style={{ backgroundColor: 'hsl(var(--sidebar-background))', borderColor: 'hsl(var(--sidebar-border))' }}>
       {/* Logo */}
-      <div className="flex h-16 items-center border-b px-6">
+      <div className="flex h-16 items-center border-b px-6" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
         <Link to={getDashboardPath()} className="flex items-center gap-2 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" />
@@ -41,7 +41,7 @@ export function Sidebar({ navigation, className }: SidebarProps) {
           {navigation.map((group, groupIndex) => (
             <div key={groupIndex} className="space-y-1">
               {group.title && (
-                <h4 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <h4 className="px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--sidebar-text-muted))' }}>
                   {group.title}
                 </h4>
               )}
@@ -51,15 +51,24 @@ export function Sidebar({ navigation, className }: SidebarProps) {
                   return (
                     <Button
                       key={item.href}
-                      variant={isActive ? 'secondary' : 'ghost'}
+                      variant={isActive ? 'default' : 'ghost'}
                       className={cn(
-                        'w-full justify-start gap-3',
-                        isActive && 'bg-secondary font-medium'
+                        'w-full justify-start gap-3 relative',
+                        isActive 
+                          ? 'font-medium' 
+                          : 'hover:bg-transparent'
                       )}
+                      style={isActive ? {
+                        backgroundColor: 'hsl(var(--sidebar-active-bg))',
+                        color: 'hsl(var(--sidebar-text))',
+                        borderLeft: '3px solid hsl(var(--sidebar-active-border, var(--primary)))'
+                      } : {
+                        color: 'hsl(var(--sidebar-text))'
+                      }}
                       asChild
                     >
                       <Link to={item.href}>
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className="h-4 w-4" style={{ color: isActive ? 'hsl(var(--sidebar-text))' : 'hsl(var(--icon-default))' }} />
                         <span>{item.title}</span>
                         {item.badge !== undefined && item.badge > 0 && (
                           <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
@@ -77,8 +86,8 @@ export function Sidebar({ navigation, className }: SidebarProps) {
       </div>
 
       {/* Footer */}
-      <div className="border-t p-4">
-        <div className="text-xs text-muted-foreground text-center">
+      <div className="border-t p-4" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
+        <div className="text-xs text-center" style={{ color: 'hsl(var(--sidebar-text-muted))' }}>
           v1.0.0
         </div>
       </div>
