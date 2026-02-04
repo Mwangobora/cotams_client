@@ -94,9 +94,7 @@ export function useSessionOptions({
     queryFn: () => lecturersApi.getLecturers(),
     enabled: open,
   });
-  const lecturers = Array.isArray(lecturersResponse)
-    ? lecturersResponse
-    : lecturersResponse?.results || [];
+  const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : [];
 
   return {
     rooms,
