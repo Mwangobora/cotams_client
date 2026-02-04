@@ -2,7 +2,7 @@
  * Timetable Filters Component - Role-based filtering
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -109,6 +109,15 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     ? streamsResponse
     : streamsResponse?.results || [];
 
+  useEffect(() => {
+    if (!showStreamSelectors) return;
+    if (!selectedProgramYear) return;
+    if (filters.stream) return;
+    if (streams.length > 0) {
+      updateFilter('stream', streams[0].id);
+    }
+  }, [showStreamSelectors, selectedProgramYear, streams, filters.stream]);
+
   const programYearLabelMap = useMemo(() => {
     return new Map(
       programYears.map((year: ProgramYear) => [
@@ -165,33 +174,6 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
         {/* Stream selectors for lecturers/students */}
         {showStreamSelectors && (
           <>
-            {isLecturer && (
-              <div className="space-y-2">
-                <Label>Department</Label>
-                <Select
-                  value={selectedDepartment}
-                  onValueChange={(value) => {
-                    setSelectedDepartment(value);
-                    setSelectedProgram('__all');
-                    setSelectedProgramYear('__all');
-                    updateFilter('stream', '__all');
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All departments" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__all">All departments</SelectItem>
-                    {departments.map((dept: Department) => (
-                      <SelectItem key={dept.id} value={dept.id}>
-                        {dept.code} - {dept.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label>Program</Label>
               <Select
