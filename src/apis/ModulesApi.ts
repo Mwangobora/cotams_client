@@ -55,6 +55,14 @@ export class ModulesApi {
       throw normalizeAxiosError(error);
     }
   }
+
+  async deleteModule(id: string): Promise<void> {
+    try {
+      await axios.delete(API_ENDPOINTS.academics.moduleDetail(id));
+    } catch (error) {
+      throw normalizeAxiosError(error);
+    }
+  }
 }
 
 export const modulesApi = new ModulesApi();

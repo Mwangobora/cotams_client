@@ -118,6 +118,17 @@ export function ModulesPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.deleteModule(id),
+    onSuccess: () => {
+      toast.success('Module deleted');
+      queryClient.invalidateQueries({ queryKey: ['modules'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete module');
+    },
+  });
+
   const columns = useMemo(
     () => [
       { header: 'Code', accessor: 'code' as keyof Module },
@@ -213,6 +224,7 @@ export function ModulesPage() {
         loading={isLoading}
         onAdd={openCreate}
         onEdit={openEdit}
+        onDelete={(module: Module) => deleteMutation.mutate(module.id)}
         actions
         editButtonText="Edit"
         emptyMessage="No modules found"

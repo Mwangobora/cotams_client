@@ -16,8 +16,13 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = Cookies.get('access_token');
+    console.log('[API Interceptor] access_token from cookie:', token ? 'EXISTS' : 'MISSING');
+    console.log('[API Interceptor] Request URL:', config.url);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('[API Interceptor] Authorization header set');
+    } else {
+      console.log('[API Interceptor] No token found in cookies');
     }
     return config;
   },
