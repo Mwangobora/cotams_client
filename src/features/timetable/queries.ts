@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { timetableApi } from '@/apis/TimetableApi';
-import { getWebSocketClient } from '@/lib/ws';
+import { getWebSocketClient, type WSMessage } from '@/lib/ws';
 import type { TimetableFilters } from './types';
 
 export const TIMETABLE_QUERY_KEYS = {
@@ -26,25 +26,20 @@ export function useSessionsQuery(filters: TimetableFilters = {}) {
 
   // Set up WebSocket listeners for real-time updates
   useEffect(() => {
-    // Skip WebSocket connection for now to avoid connection errors
-    // TODO: Enable when WebSocket endpoint is ready
-    return;
-    
     // Only connect WebSocket if user is authenticated
     if (!Cookies.get('access_token')) return;
     
     const wsClient = getWebSocketClient();
 
-    const handleSessionUpdate = () => {
+    const handleNotification = (message: WSMessage) => {
+      const eventType = message.event_type;
+      if (typeof eventType !== 'string' || !eventType.startsWith('timetable.')) return;
       queryClient.invalidateQueries({ 
         queryKey: TIMETABLE_QUERY_KEYS.all 
       });
     };
 
-    wsClient.on('timetable_update', handleSessionUpdate);
-    wsClient.on('session_created', handleSessionUpdate);
-    wsClient.on('session_updated', handleSessionUpdate);
-    wsClient.on('session_deleted', handleSessionUpdate);
+    wsClient.on('notification', handleNotification);
 
     // Connect if not already connected
     wsClient.connect().catch(() => {
@@ -53,10 +48,7 @@ export function useSessionsQuery(filters: TimetableFilters = {}) {
     });
 
     return () => {
-      wsClient.off('timetable_update');
-      wsClient.off('session_created');
-      wsClient.off('session_updated');
-      wsClient.off('session_deleted');
+      wsClient.off('notification', handleNotification);
     };
   }, [queryClient]);
 

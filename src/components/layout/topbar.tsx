@@ -13,6 +13,8 @@ import { MobileSidebar } from './mobile-sidebar';
 import { type NavGroup } from '@/config/navigation.config';
 import { useAuthStore } from '@/store/auth.store';
 import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { useUnreadCountQuery } from '@/features/notifications/hooks';
 
 interface TopbarProps {
   navigation: NavGroup[];
@@ -22,7 +24,7 @@ interface TopbarProps {
 
 export function Topbar({ navigation, isSidebarOpen, onToggleSidebar }: TopbarProps) {
   const { user, logout } = useAuthStore();
-  const unreadNotifications = 0; // TODO: Get from notifications store
+  const { data: unreadNotifications = 0 } = useUnreadCountQuery();
   const roles = user?.roles?.map((role) => role.code) || [];
   const getBasePath = () => {
     if (roles.includes('ADMIN')) return '/admin';
@@ -60,7 +62,7 @@ export function Topbar({ navigation, isSidebarOpen, onToggleSidebar }: TopbarPro
 
           {/* Notifications */}
           <Button variant="outline" size="icon" className="relative" asChild>
-            <Link to="/notifications">
+            <Link to={`${getBasePath()}/notifications`}>
               <Bell className="h-4 w-4" />
               {unreadNotifications > 0 && (
                 <Badge

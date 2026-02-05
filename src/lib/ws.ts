@@ -1,45 +1,29 @@
-/**
- * WebSocket Client for Real-time Updates
- * Handles connection, reconnection, and message broadcasting
- */
-
+import Cookies from 'js-cookie';
 import { toast } from 'sonner';
-
-export interface WSMessage {
-  type: string;
-  payload: any;
-}
-
-export interface WSEventHandlers {
-  [key: string]: (payload: any) => void;
-}
-
+export type WSMessage = { type: string; [key: string]: any };
+type Handler = (message: WSMessage) => void;
+type HandlerMap = Record<string, Set<Handler>>;
 class WebSocketClient {
   private ws: WebSocket | null = null;
-  private url: string;
+  private getUrl: () => string;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000; // Start with 1 second
-  private eventHandlers: WSEventHandlers = {};
+  private eventHandlers: HandlerMap = {};
   private isConnecting = false;
   private shouldReconnect = true;
-
-  constructor(url: string) {
-    this.url = url;
+  constructor(getUrl: () => string) {
+    this.getUrl = getUrl;
   }
-
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
         resolve();
         return;
       }
-
       this.isConnecting = true;
-
       try {
-        this.ws = new WebSocket(this.url);
-
+        this.ws = new WebSocket(this.getUrl());
         this.ws.onopen = () => {
           this.isConnecting = false;
           this.reconnectAttempts = 0;
@@ -56,16 +40,13 @@ class WebSocketClient {
             console.error('Error parsing WebSocket message:', error);
           }
         };
-
         this.ws.onclose = (event) => {
           this.isConnecting = false;
           console.log('WebSocket closed:', event.code, event.reason);
-          
           if (this.shouldReconnect) {
             this.scheduleReconnect();
           }
         };
-
         this.ws.onerror = (error) => {
           this.isConnecting = false;
           console.error('WebSocket error:', error);
@@ -78,39 +59,40 @@ class WebSocketClient {
       }
     });
   }
-
   private scheduleReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('Max reconnection attempts reached');
       toast.error('Connection lost. Please refresh the page.');
       return;
     }
-
     this.reconnectAttempts++;
     const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts), 30000);
-    
     console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
-    
     setTimeout(() => {
       this.connect().catch(() => {
         // Reconnection failed, will try again
       });
     }, delay);
   }
-
   private handleMessage(message: WSMessage): void {
-    const handler = this.eventHandlers[message.type];
-    if (handler) {
-      handler(message.payload);
+    const handlers = this.eventHandlers[message.type];
+    if (!handlers) return;
+    handlers.forEach((handler) => handler(message));
+  }
+
+  on(event: string, handler: Handler): void {
+    if (!this.eventHandlers[event]) this.eventHandlers[event] = new Set();
+    this.eventHandlers[event].add(handler);
+  }
+  off(event: string, handler?: Handler): void {
+    if (!handler) {
+      delete this.eventHandlers[event];
+      return;
     }
-  }
-
-  on(event: string, handler: (payload: any) => void): void {
-    this.eventHandlers[event] = handler;
-  }
-
-  off(event: string): void {
-    delete this.eventHandlers[event];
+    const handlers = this.eventHandlers[event];
+    if (!handlers) return;
+    handlers.delete(handler);
+    if (handlers.size === 0) delete this.eventHandlers[event];
   }
 
   send(message: WSMessage): void {
@@ -120,7 +102,6 @@ class WebSocketClient {
       console.warn('WebSocket not connected, cannot send message');
     }
   }
-
   disconnect(): void {
     this.shouldReconnect = false;
     if (this.ws) {
@@ -133,19 +114,22 @@ class WebSocketClient {
     return this.ws?.readyState === WebSocket.OPEN;
   }
 }
-
 // Singleton instance
 let wsClient: WebSocketClient | null = null;
 
 export function getWebSocketClient(): WebSocketClient {
   if (!wsClient) {
-    // Use environment variable or fallback to default WebSocket URL
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/';
-    wsClient = new WebSocketClient(wsUrl);
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/notifications/';
+    const getUrl = () => {
+      const token = Cookies.get('access_token');
+      if (!token) return wsUrl;
+      const sep = wsUrl.includes('?') ? '&' : '?';
+      return `${wsUrl}${sep}token=${token}`;
+    };
+    wsClient = new WebSocketClient(getUrl);
   }
   return wsClient;
 }
-
 export function disconnectWebSocket(): void {
   if (wsClient) {
     wsClient.disconnect();
