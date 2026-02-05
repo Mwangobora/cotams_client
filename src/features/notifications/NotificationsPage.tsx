@@ -41,6 +41,16 @@ export function NotificationsPage() {
 
         <Card className="mt-4">
           <CardHeader>
+            <CardTitle>Timetable Updates</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            When schedules change, students and lecturers receive an instant notification, no
+            page refresh required. Keep this tab open to see the latest updates.
+          </CardContent>
+        </Card>
+
+        <Card className="mt-4">
+          <CardHeader>
             <CardTitle>Inbox</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

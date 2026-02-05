@@ -3,7 +3,7 @@ import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 import { getNavigationForRole } from '@/config/navigation.config';
 import { useAuthStore } from '@/store/auth.store';
-import { useRealtimeNotifications } from '@/features/notifications/hooks';
+import { useRealtimeNotifications, useRealtimeTimetableUpdates } from '@/features/notifications/hooks';
 
 interface AppShellProps {
   children: ReactNode;
@@ -20,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
   const { user } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   useRealtimeNotifications();
+  useRealtimeTimetableUpdates();
   
   // Get navigation based on user roles
   const userRoles = user?.roles?.map(r => r.code) || ['STUDENT'];

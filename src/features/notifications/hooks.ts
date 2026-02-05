@@ -90,3 +90,25 @@ export function useRealtimeNotifications() {
     };
   }, [queryClient]);
 }
+
+export function useRealtimeTimetableUpdates() {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!Cookies.get('access_token')) return;
+    const wsClient = getWebSocketClient();
+    const onNotification = (msg: WSMessage) => {
+      const eventType = msg.event_type;
+      if (typeof eventType !== 'string' || !eventType.startsWith('timetable.')) return;
+      toast(msg.title || 'Timetable updated', { description: msg.message || 'A change was published.' });
+      queryClient.invalidateQueries({ queryKey: ['timetable'] });
+      queryClient.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
+    };
+    wsClient.on('notification', onNotification);
+    wsClient.connect().catch(() => {
+      console.warn('WebSocket connection failed, continuing without real-time updates');
+    });
+    return () => {
+      wsClient.off('notification', onNotification);
+    };
+  }, [queryClient]);
+}
