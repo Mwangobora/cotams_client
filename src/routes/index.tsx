@@ -18,6 +18,7 @@ import { ProgramsPage } from '@/features/admin/programs/ProgramsPage';
 import { LecturersPage } from '@/features/admin/lecturers/LecturersPage';
 import { SubmissionsPage } from '@/features/submissions/SubmissionsPage';
 import { DepartmentsPage } from '@/features/admin/departments/DepartmentsPage';
+import { UsersPage } from '@/features/admin/users/UsersPage';
 import { ModulesPage } from '@/features/staff/modules/ModulesPage';
 import { ModuleLecturersPage } from '@/features/staff/module-lecturers/ModuleLecturersPage';
 import { LecturersPage as StaffLecturersPage } from '@/features/staff/lecturers/LecturersPage';
@@ -47,6 +48,7 @@ export function AppRouter() {
                 <Route path="programs" element={<ProgramsPage />} />
                 <Route path="lecturers" element={<LecturersPage />} />
                 <Route path="departments" element={<DepartmentsPage />} />
+                <Route path="users" element={<UsersPage />} />
                 <Route path="submissions" element={<SubmissionsPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="profile" element={<ProfilePage />} />

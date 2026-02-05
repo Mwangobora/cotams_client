@@ -65,6 +65,15 @@ export const API_ENDPOINTS = {
     students: '/accounts/users/?role=STUDENT',
     profile: '/accounts/profile/',
     adminUsers: '/admin/users/',
+    adminUserDetail: (id: string) => `/admin/users/${id}/`,
+  },
+
+  // RBAC
+  rbac: {
+    roles: '/rbac/roles/',
+    permissions: '/rbac/permissions/',
+    rolePermissions: (id: string) => `/rbac/roles/${id}/permissions/`,
+    userRoles: (id: string) => `/rbac/users/${id}/roles/`,
   },
 
   // Notifications
