@@ -2,35 +2,90 @@
  * Admin Dashboard Page
  */
 
+import { motion } from 'framer-motion';
 import { PageContainer } from '@/components/layout/layout-primitives';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Users, Building2, GraduationCap, BookOpen, CalendarClock, DoorOpen } from 'lucide-react';
+import { AdminStatsGrid } from './admin/AdminStatsGrid';
+import { AdminDepartmentTable } from './admin/AdminDepartmentTable';
+import { AdminRoomsPanel } from './admin/AdminRoomsPanel';
+import { AdminSessionsPanel } from './admin/AdminSessionsPanel';
+import { useAdminDashboardData } from './admin/useAdminDashboardData';
 
 export function AdminDashboard() {
+  const { loading, totalUsers, totals, departmentStats, roomsUsage, todaySessions, now } =
+    useAdminDashboardData();
+
+  const stats = [
+    {
+      label: 'Total Users',
+      value: totalUsers || '—',
+      helper: 'System accounts',
+      icon: Users,
+      accent: 'text-emerald-500/80',
+    },
+    {
+      label: 'Departments',
+      value: totals.departments || '—',
+      helper: 'Active departments',
+      icon: Building2,
+      accent: 'text-sky-500/80',
+    },
+    {
+      label: 'Lecturers',
+      value: totals.lecturers || '—',
+      helper: 'Total lecturers',
+      icon: GraduationCap,
+      accent: 'text-amber-500/80',
+    },
+    {
+      label: 'Courses',
+      value: totals.courses || '—',
+      helper: 'Active modules',
+      icon: BookOpen,
+      accent: 'text-purple-500/80',
+    },
+    {
+      label: 'Sessions',
+      value: totals.sessions || '—',
+      helper: 'All scheduled sessions',
+      icon: CalendarClock,
+      accent: 'text-indigo-500/80',
+    },
+    {
+      label: 'Rooms',
+      value: totals.rooms || '—',
+      helper: 'Total rooms tracked',
+      icon: DoorOpen,
+      accent: 'text-rose-500/80',
+    },
+  ];
+
   return (
     <PageContainer>
-      <div className="space-y-6">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-muted-foreground">
-            Manage users, timetables, and system settings
+            Live overview of departments, sessions, rooms, and system usage.
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Shield className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">—</div>
-              <p className="text-xs text-muted-foreground">Placeholder data</p>
-            </CardContent>
-          </Card>
-          {/* Add more stat cards as needed */}
+        {loading && (
+          <Alert>
+            <AlertDescription>Loading dashboard data...</AlertDescription>
+          </Alert>
+        )}
+
+        <AdminStatsGrid stats={stats} />
+
+        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <AdminDepartmentTable items={departmentStats} />
+          <AdminSessionsPanel sessions={todaySessions} />
         </div>
-      </div>
+
+        <AdminRoomsPanel used={roomsUsage.used} free={roomsUsage.free} now={now} />
+      </motion.div>
     </PageContainer>
   );
 }

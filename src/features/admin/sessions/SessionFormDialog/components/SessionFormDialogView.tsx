@@ -56,7 +56,7 @@ export function SessionFormDialogView({
 }: SessionFormDialogViewProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-5xl">
+      <DialogContent className="w-[95vw] max-w-5xl max-h-[85vh] overflow-y-auto sm:max-h-[90vh]">
         <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>{session ? 'Edit Session' : 'Add Session'}</DialogTitle>
