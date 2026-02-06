@@ -3,7 +3,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ export function RolesPanel() {
   const { data: rolesResponse, isLoading } = useQuery({
     queryKey: ['rbac', 'roles', page, pageSize],
     queryFn: () => api.listRoles({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const { data: permissionsResponse } = useQuery({

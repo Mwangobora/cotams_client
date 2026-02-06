@@ -2,7 +2,7 @@
  * Admin users data & mutations
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AdminUsersApi } from '@/apis/AdminUsersApi';
 import { RbacApi } from '@/apis/RbacApi';
@@ -27,7 +27,7 @@ export function useAdminUsers({
   const { data: usersResponse, isLoading } = useQuery({
     queryKey: ['admin-users', page, pageSize, search],
     queryFn: () => api.listUsers({ page, page_size: pageSize, search }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const { data: rolesResponse } = useQuery({

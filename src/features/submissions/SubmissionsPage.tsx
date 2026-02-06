@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore } from '@/store/auth.store';
 import { SubmissionsApi } from '@/apis/SubmissionsApi';
@@ -34,7 +34,7 @@ export function SubmissionsPage() {
   const { data: submissionsResponse, isLoading } = useQuery({
     queryKey: ['submissions', isAdmin ? 'admin' : 'staff', page, pageSize],
     queryFn: () => submissionsApi.getSubmissions({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const submissions = Array.isArray(submissionsResponse)

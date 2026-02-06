@@ -3,7 +3,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +43,7 @@ export function DepartmentsPage() {
   const { data: departmentsResponse, isLoading } = useQuery({
     queryKey: ['departments', page, pageSize],
     queryFn: () => api.getDepartments({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const departments = Array.isArray(departmentsResponse)

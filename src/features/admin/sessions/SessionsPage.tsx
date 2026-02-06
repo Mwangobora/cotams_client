@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { DataTable } from '@/components/shared/DataTable';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,7 @@ export function SessionsPage() {
   const { data: sessionsResponse, isLoading } = useQuery({
     queryKey: ['sessions', page, pageSize],
     queryFn: () => api.getSessions({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const sessions = Array.isArray(sessionsResponse) ? sessionsResponse : sessionsResponse?.results || [];

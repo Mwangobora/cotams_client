@@ -65,7 +65,7 @@ export function ModuleLecturersPage() {
   const { data: assignmentsResponse, isLoading } = useQuery({
     queryKey: ['module-lecturers', page, pageSize],
     queryFn: () => assignmentsApi.getAssignments({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const { data: departmentsResponse, isLoading: loadingDepartments } = useQuery({

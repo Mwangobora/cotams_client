@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,7 @@ export function LecturersPage() {
   const { data: lecturersResponse, isLoading } = useQuery({
     queryKey: ['lecturers', searchTerm, page, pageSize],
     queryFn: () => api.getLecturers({ search: searchTerm, page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : lecturersResponse?.results || [];

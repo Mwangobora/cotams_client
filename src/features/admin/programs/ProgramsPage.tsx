@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { ProgramsApi } from '@/apis/ProgramsApi';
@@ -20,7 +20,7 @@ export function ProgramsPage() {
   const { data: programsResponse, isLoading } = useQuery({
     queryKey: ['programs', page, pageSize],
     queryFn: () => api.getPrograms({ page, page_size: pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const programs = Array.isArray(programsResponse) ? programsResponse : programsResponse?.results || [];

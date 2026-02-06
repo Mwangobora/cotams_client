@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast} from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -75,7 +75,7 @@ export function StreamsPage() {
           ? { program_year: selectedProgramYearFilter, page, page_size: pageSize }
           : { page, page_size: pageSize }
       ),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
   const streams = Array.isArray(streamsResponse)
     ? streamsResponse
