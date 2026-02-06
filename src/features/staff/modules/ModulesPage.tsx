@@ -50,6 +50,8 @@ export function ModulesPage() {
   const departmentId = user?.staff_profile?.department || '';
   const departmentName = user?.staff_profile?.department_name || '';
   const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     if (departmentId && !selectedDepartment) {
@@ -57,6 +59,9 @@ export function ModulesPage() {
     }
   }, [departmentId, selectedDepartment]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [selectedDepartment]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState<Module | null>(null);
@@ -75,15 +80,23 @@ export function ModulesPage() {
   });
 
   const { data: modulesResponse, isLoading } = useQuery({
-    queryKey: ['modules', selectedDepartment],
+    queryKey: ['modules', selectedDepartment, page, pageSize],
     queryFn: () =>
-      api.getModules(selectedDepartment ? { department: selectedDepartment } : {}),
+      api.getModules(
+        selectedDepartment
+          ? { department: selectedDepartment, page, page_size: pageSize }
+          : { page, page_size: pageSize }
+      ),
+    keepPreviousData: true,
   });
 
 
   const modules = Array.isArray(modulesResponse)
     ? modulesResponse
     : modulesResponse?.results || [];
+  const totalModules = Array.isArray(modulesResponse)
+    ? modulesResponse.length
+    : modulesResponse?.count || 0;
   const departments = Array.isArray(departmentsResponse)
     ? departmentsResponse
     : departmentsResponse?.results || [];
@@ -228,6 +241,13 @@ export function ModulesPage() {
         actions
         editButtonText="Edit"
         emptyMessage="No modules found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalModules,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

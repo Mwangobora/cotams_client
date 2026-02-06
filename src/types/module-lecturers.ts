@@ -2,6 +2,7 @@
  * Module Lecturer Assignment Types
  */
 
+import type { QueryParams } from './api.type';
 export interface ModuleLecturerAssignment {
   id: string;
   module: string;
@@ -27,7 +28,7 @@ export interface ModuleLecturerFormData {
   is_active?: boolean;
 }
 
-export interface ModuleLecturerFilters {
+export interface ModuleLecturerFilters extends QueryParams {
   module?: string;
   lecturer?: string;
   academic_year?: string;

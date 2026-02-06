@@ -12,6 +12,9 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface Column<T> {
   header: string;
@@ -32,6 +35,18 @@ interface DataTableProps<T> {
   actions?: boolean;
   editButtonText?: string;
   deleteButtonText?: string;
+  showPagination?: boolean;
+  defaultPageSize?: number;
+  pageSizeOptions?: number[];
+  pagination?: {
+    page: number;
+    pageSize: number;
+    total: number;
+    onPageChange: (page: number) => void;
+    onPageSizeChange?: (size: number) => void;
+    pageSizeOptions?: number[];
+    mode?: 'client' | 'server';
+  };
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -46,8 +61,42 @@ export function DataTable<T extends { id: string | number }>({
   emptyMessage = 'No data available',
   actions = true,
   editButtonText = 'Edit',
-  deleteButtonText = 'Delete'
+  deleteButtonText = 'Delete',
+  showPagination = true,
+  defaultPageSize = 10,
+  pageSizeOptions = [5, 10, 20, 50],
+  pagination
 }: DataTableProps<T>) {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+
+  const isControlled = Boolean(pagination);
+  const effectivePage = isControlled ? pagination!.page : page;
+  const effectivePageSize = isControlled ? pagination!.pageSize : pageSize;
+  const effectivePageSizeOptions =
+    pagination?.pageSizeOptions?.length ? pagination.pageSizeOptions : pageSizeOptions;
+  const paginationMode = pagination?.mode ?? (isControlled ? 'server' : 'client');
+
+  const totalItems = isControlled ? pagination!.total : data.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / effectivePageSize));
+
+  useEffect(() => {
+    if (isControlled) return;
+    if (page > totalPages) setPage(totalPages);
+  }, [isControlled, page, totalPages]);
+
+  useEffect(() => {
+    if (isControlled) return;
+    setPage(1);
+  }, [isControlled, pageSize]);
+
+  useEffect(() => {
+    if (!isControlled) return;
+    if (pagination!.page > totalPages && totalPages > 0) {
+      pagination!.onPageChange(totalPages);
+    }
+  }, [isControlled, pagination, totalPages]);
+
   const getCellValue = (item: T, column: Column<T>): React.ReactNode => {
     if (typeof column.accessor === 'function') {
       return column.accessor(item);
@@ -55,6 +104,17 @@ export function DataTable<T extends { id: string | number }>({
     const value = item[column.accessor];
     return value as React.ReactNode;
   };
+
+  const paginatedData = useMemo(() => {
+    if (!showPagination) return data;
+    if (paginationMode === 'server') return data;
+    const start = (effectivePage - 1) * effectivePageSize;
+    return data.slice(start, start + effectivePageSize);
+  }, [data, effectivePage, effectivePageSize, paginationMode, showPagination]);
+
+  const startItem =
+    totalItems === 0 ? 0 : (effectivePage - 1) * effectivePageSize + 1;
+  const endItem = Math.min(effectivePage * effectivePageSize, totalItems);
 
   return (
     <Card>
@@ -76,61 +136,135 @@ export function DataTable<T extends { id: string | number }>({
             {emptyMessage}
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {columns.map((column, index) => (
-                  <TableHead 
-                    key={index}
-                    className={column.className}
-                  >
-                    {column.header}
-                  </TableHead>
-                ))}
-                {actions && (onEdit || onDelete) && (
-                  <TableHead>Actions</TableHead>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((item, index) => (
-                <TableRow key={item.id || index}>
-                  {columns.map((column, colIndex) => (
-                    <TableCell 
-                      key={colIndex}
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {columns.map((column, index) => (
+                    <TableHead 
+                      key={index}
                       className={column.className}
                     >
-                      {getCellValue(item, column)}
-                    </TableCell>
+                      {column.header}
+                    </TableHead>
                   ))}
                   {actions && (onEdit || onDelete) && (
-                    <TableCell>
-                      <div className="flex gap-2">
-                        {onEdit && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => onEdit(item)}
-                          >
-                            {editButtonText}
-                          </Button>
-                        )}
-                        {onDelete && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => onDelete(item)}
-                          >
-                            {deleteButtonText}
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
+                    <TableHead>Actions</TableHead>
                   )}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((item, index) => (
+                  <TableRow key={item.id || index}>
+                    {columns.map((column, colIndex) => (
+                      <TableCell 
+                        key={colIndex}
+                        className={column.className}
+                      >
+                        {getCellValue(item, column)}
+                      </TableCell>
+                    ))}
+                    {actions && (onEdit || onDelete) && (
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {onEdit && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-yellow-500/40 text-yellow-700 hover:bg-yellow-500/10 hover:text-yellow-800"
+                              onClick={() => onEdit(item)}
+                            >
+                              {editButtonText}
+                            </Button>
+                          )}
+                          {onDelete && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700"
+                              onClick={() => onDelete(item)}
+                            >
+                              {deleteButtonText}
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            {showPagination && totalItems > 0 && (
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Showing {startItem}-{endItem} of {totalItems}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Rows</span>
+                  <Select
+                    value={String(effectivePageSize)}
+                    onValueChange={(value) => {
+                      const nextSize = Number(value);
+                      if (isControlled) {
+                        pagination?.onPageSizeChange?.(nextSize);
+                        if (effectivePage !== 1) {
+                          pagination?.onPageChange(1);
+                        }
+                      } else {
+                        setPageSize(nextSize);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-[90px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {effectivePageSizeOptions.map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={() => {
+                      if (isControlled) {
+                        pagination?.onPageChange(Math.max(1, effectivePage - 1));
+                      } else {
+                        setPage((prev) => Math.max(1, prev - 1));
+                      }
+                    }}
+                    disabled={effectivePage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {effectivePage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={() => {
+                      if (isControlled) {
+                        pagination?.onPageChange(Math.min(totalPages, effectivePage + 1));
+                      } else {
+                        setPage((prev) => Math.min(totalPages, prev + 1));
+                      }
+                    }}
+                    disabled={effectivePage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>

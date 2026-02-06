@@ -21,10 +21,13 @@ export function RolesPanel() {
   const queryClient = useQueryClient();
   const [selectedRole, setSelectedRole] = useState<RoleSummary | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: rolesResponse, isLoading } = useQuery({
-    queryKey: ['rbac', 'roles'],
-    queryFn: () => api.listRoles(),
+    queryKey: ['rbac', 'roles', page, pageSize],
+    queryFn: () => api.listRoles({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const { data: permissionsResponse } = useQuery({
@@ -33,6 +36,7 @@ export function RolesPanel() {
   });
 
   const roles = toArray<RoleSummary>(rolesResponse);
+  const totalRoles = Array.isArray(rolesResponse) ? rolesResponse.length : rolesResponse?.count || 0;
   const permissions = toArray<PermissionSummary>(permissionsResponse);
 
   const assignMutation = useMutation({
@@ -88,6 +92,13 @@ export function RolesPanel() {
         loading={isLoading}
         actions={false}
         emptyMessage="No roles found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalRoles,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <RolePermissionsDialog

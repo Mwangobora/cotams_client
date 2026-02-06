@@ -2,6 +2,7 @@
  * Academic Submissions Types
  */
 
+import type { QueryParams } from './api.type';
 export type SubmissionStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 export type SubmissionModuleAction = 'CREATE' | 'UPDATE';
 export type SubmissionModuleLecturerAction = 'CREATE' | 'DELETE';
@@ -89,7 +90,7 @@ export interface AcademicSubmissionCreatePayload {
   module_lecturer_items?: SubmissionModuleLecturerInput[];
 }
 
-export interface SubmissionFilters {
+export interface SubmissionFilters extends QueryParams {
   status?: SubmissionStatus;
   department?: string;
 }

@@ -44,7 +44,7 @@ export function AppShell({ children }: AppShellProps) {
         />
         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-muted/10">
+        <main className="flex-1 overflow-y-auto bg-muted/10 lg:px-4">
           {children}
         </main>
       </div>

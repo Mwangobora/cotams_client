@@ -2,6 +2,7 @@
  * Module Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Module {
   id: string;
   code: string;
@@ -16,7 +17,7 @@ export interface Module {
   updated_at?: string;
 }
 
-export interface ModuleFilters {
+export interface ModuleFilters extends QueryParams {
   search?: string;
   department?: string;
   is_active?: boolean;

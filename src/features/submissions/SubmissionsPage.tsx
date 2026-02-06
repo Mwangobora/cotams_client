@@ -28,15 +28,21 @@ export function SubmissionsPage() {
   const [selectedSubmission, setSelectedSubmission] = useState<AcademicSubmission | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [reviewNotes, setReviewNotes] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: submissionsResponse, isLoading } = useQuery({
-    queryKey: ['submissions', isAdmin ? 'admin' : 'staff'],
-    queryFn: () => submissionsApi.getSubmissions(),
+    queryKey: ['submissions', isAdmin ? 'admin' : 'staff', page, pageSize],
+    queryFn: () => submissionsApi.getSubmissions({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const submissions = Array.isArray(submissionsResponse)
     ? submissionsResponse
     : submissionsResponse?.results || [];
+  const totalSubmissions = Array.isArray(submissionsResponse)
+    ? submissionsResponse.length
+    : submissionsResponse?.count || 0;
 
   const closeDetails = () => setDetailsOpen(false);
 
@@ -67,6 +73,11 @@ export function SubmissionsPage() {
             isAdmin={isAdmin}
             isLoading={isLoading}
             onView={openDetails}
+            page={page}
+            pageSize={pageSize}
+            total={totalSubmissions}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
           />
         </TabsContent>
 

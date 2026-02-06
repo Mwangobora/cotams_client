@@ -16,15 +16,19 @@ export function RoomsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const queryClient = useQueryClient();
   const api = new RoomsApi();
 
   const { data: roomsResponse, isLoading } = useQuery({
-    queryKey: ['rooms'],
-    queryFn: () => api.getRooms()
+    queryKey: ['rooms', page, pageSize],
+    queryFn: () => api.getRooms({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const rooms = Array.isArray(roomsResponse) ? roomsResponse : roomsResponse?.results || [];
+  const totalRooms = Array.isArray(roomsResponse) ? roomsResponse.length : roomsResponse?.count || 0;
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteRoom(id),
@@ -108,6 +112,13 @@ export function RoomsPage() {
         onDelete={handleDelete}
         addButtonText="Add Room"
         emptyMessage="No rooms found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalRooms,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <RoomFormDialog

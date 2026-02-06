@@ -2,6 +2,7 @@
  * Rooms Management Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Room {
   id: string;
   code: string;
@@ -28,7 +29,7 @@ export interface RoomFormData {
   is_active: boolean;
 }
 
-export interface RoomFilters {
+export interface RoomFilters extends QueryParams {
   search?: string;
   building?: string;
   room_type?: RoomType;

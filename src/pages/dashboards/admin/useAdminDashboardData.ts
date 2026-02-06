@@ -26,6 +26,7 @@ const timeToMinutes = (time: string) => {
 
 export function useAdminDashboardData() {
   const [now, setNow] = useState(() => new Date());
+  const pageSizeAll = 1000;
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60 * 1000);
@@ -40,27 +41,27 @@ export function useAdminDashboardData() {
 
   const { data: departmentsResponse, isLoading: loadingDepartments } = useQuery({
     queryKey: ['admin-dashboard', 'departments'],
-    queryFn: () => departmentsApi.getDepartments(),
+    queryFn: () => departmentsApi.getDepartments({ page: 1, page_size: pageSizeAll }),
   });
 
   const { data: lecturersResponse, isLoading: loadingLecturers } = useQuery({
     queryKey: ['admin-dashboard', 'lecturers'],
-    queryFn: () => lecturersApi.getLecturers(),
+    queryFn: () => lecturersApi.getLecturers({ page: 1, page_size: pageSizeAll }),
   });
 
   const { data: modulesResponse, isLoading: loadingModules } = useQuery({
     queryKey: ['admin-dashboard', 'modules'],
-    queryFn: () => modulesApi.getModules(),
+    queryFn: () => modulesApi.getModules({ page: 1, page_size: pageSizeAll }),
   });
 
   const { data: roomsResponse, isLoading: loadingRooms } = useQuery({
     queryKey: ['admin-dashboard', 'rooms'],
-    queryFn: () => roomsApi.getRooms(),
+    queryFn: () => roomsApi.getRooms({ page: 1, page_size: pageSizeAll }),
   });
 
   const { data: sessionsResponse, isLoading: loadingSessions } = useQuery({
     queryKey: ['admin-dashboard', 'sessions'],
-    queryFn: () => sessionsApi.getSessions(),
+    queryFn: () => sessionsApi.getSessions({ page: 1, page_size: pageSizeAll }),
   });
 
   const { data: usersResponse, isLoading: loadingUsers } = useQuery({

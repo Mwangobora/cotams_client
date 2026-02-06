@@ -11,14 +11,23 @@ import type { AdminUser, CreateUserPayload, RoleSummary, UpdateUserPayload } fro
 const toArray = <T,>(response: any): T[] =>
   Array.isArray(response) ? response : response?.results || [];
 
-export function useAdminUsers() {
+export function useAdminUsers({
+  page,
+  pageSize,
+  search,
+}: {
+  page: number;
+  pageSize: number;
+  search: string;
+}) {
   const api = new AdminUsersApi();
   const rbacApi = new RbacApi();
   const queryClient = useQueryClient();
 
   const { data: usersResponse, isLoading } = useQuery({
-    queryKey: ['admin-users'],
-    queryFn: () => api.listUsers(),
+    queryKey: ['admin-users', page, pageSize, search],
+    queryFn: () => api.listUsers({ page, page_size: pageSize, search }),
+    keepPreviousData: true,
   });
 
   const { data: rolesResponse } = useQuery({
@@ -27,6 +36,7 @@ export function useAdminUsers() {
   });
 
   const users = toArray<AdminUser>(usersResponse);
+  const totalUsers = Array.isArray(usersResponse) ? usersResponse.length : usersResponse?.count || 0;
   const roles = toArray<RoleSummary>(rolesResponse);
 
   const createUser = useMutation({
@@ -69,6 +79,7 @@ export function useAdminUsers() {
 
   return {
     users,
+    totalUsers,
     roles,
     isLoading,
     createUser,

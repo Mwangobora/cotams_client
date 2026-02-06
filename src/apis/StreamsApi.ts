@@ -5,6 +5,7 @@
 import axios from '@/services/api';
 import { normalizeAxiosError } from '@/features/auth/errors';
 import { API_ENDPOINTS } from '@/config/endpoints';
+import type { QueryParams } from '@/types/api.type';
 import type { Stream } from '@/types/streams';
 
 export interface StreamFormData {
@@ -15,7 +16,7 @@ export interface StreamFormData {
   is_active: boolean;
 }
 
-export interface StreamFilters {
+export interface StreamFilters extends QueryParams {
   program_year?: string;
   is_active?: boolean;
 }
@@ -47,7 +48,7 @@ export class StreamsApi {
       );
       return response.data;
     } catch (error) {
-      throw normalizeAxiosError(error);
+      throw normalizeAxiosError("Failed to create stream: " + error);
     }
   }
 
@@ -60,6 +61,16 @@ export class StreamsApi {
       return response.data;
     } catch (error) {
       throw normalizeAxiosError(error);
+    }
+  }
+  async deleteStream (id:string, data: { reason: string }): Promise<void> {
+    try {
+      await axios.delete(
+        API_ENDPOINTS.academics.streamDetail(id),
+        { data }
+      );
+    } catch (error) {
+      throw normalizeAxiosError("Failed to delete stream: " + error);
     }
   }
 }

@@ -75,6 +75,8 @@ export function LecturersPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [formData, setFormData] = useState<LecturerFormState>({
     ...defaultForm,
     department: departmentId,
@@ -86,17 +88,25 @@ export function LecturersPage() {
   });
 
   const { data: lecturersResponse, isLoading } = useQuery({
-    queryKey: ['lecturers', selectedDepartment],
+    queryKey: ['lecturers', selectedDepartment, page, pageSize],
     queryFn: () =>
-      selectedDepartment
-        ? lecturersApi.getDepartmentLecturers(selectedDepartment)
-        : Promise.resolve([]),
+      lecturersApi.getLecturers({
+        department: selectedDepartment || undefined,
+        page,
+        page_size: pageSize,
+      }),
+    keepPreviousData: true,
   });
 
   const departments = Array.isArray(departmentsResponse)
     ? departmentsResponse
     : departmentsResponse?.results || [];
-  const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : [];
+  const lecturers = Array.isArray(lecturersResponse)
+    ? lecturersResponse
+    : lecturersResponse?.results || [];
+  const totalLecturers = Array.isArray(lecturersResponse)
+    ? lecturersResponse.length
+    : lecturersResponse?.count || 0;
 
   useEffect(() => {
     if (departmentId && !selectedDepartment) {
@@ -110,6 +120,10 @@ export function LecturersPage() {
       setFormData((prev) => ({ ...prev, department: fallbackDept }));
     }
   }, [departmentId, selectedDepartment, departments]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedDepartment]);
 
   const createMutation = useMutation({
     mutationFn: (data: LecturerFormState) =>
@@ -208,6 +222,13 @@ export function LecturersPage() {
         actions
         editButtonText="Edit"
         emptyMessage="No lecturers found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalLecturers,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

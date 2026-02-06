@@ -2,9 +2,9 @@
  * Streams Management Feature (Staff)
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { toast} from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,8 @@ export function StreamsPage() {
   const [selected, setSelected] = useState<Stream | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProgramYear, setSelectedProgramYear] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [formData, setFormData] = useState<StreamFormState>({
     program_year: '',
     stream_code: '',
@@ -66,15 +68,25 @@ export function StreamsPage() {
   const selectedProgramYearFilter =
     selectedProgramYear === '__all' ? '' : selectedProgramYear;
   const { data: streamsResponse, isLoading } = useQuery({
-    queryKey: ['streams', selectedProgramYearFilter],
+    queryKey: ['streams', selectedProgramYearFilter, page, pageSize],
     queryFn: () =>
       streamsApi.getStreams(
-        selectedProgramYearFilter ? { program_year: selectedProgramYearFilter } : {}
+        selectedProgramYearFilter
+          ? { program_year: selectedProgramYearFilter, page, page_size: pageSize }
+          : { page, page_size: pageSize }
       ),
+    keepPreviousData: true,
   });
   const streams = Array.isArray(streamsResponse)
     ? streamsResponse
     : streamsResponse?.results || [];
+  const totalStreams = Array.isArray(streamsResponse)
+    ? streamsResponse.length
+    : streamsResponse?.count || 0;
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedProgramYear]);
 
   const createMutation = useMutation({
     mutationFn: (data: StreamFormData) => streamsApi.createStream(data),
@@ -85,6 +97,18 @@ export function StreamsPage() {
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to create stream');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      streamsApi.deleteStream(id, { reason }),
+    onSuccess: () => {
+      toast.success('Stream deleted');
+      queryClient.invalidateQueries({ queryKey: ['streams'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete stream');
     },
   });
 
@@ -208,7 +232,15 @@ export function StreamsPage() {
         onEdit={openEdit}
         actions
         editButtonText="Edit"
+        onDelete={(stream: Stream) => deleteMutation.mutate({ id: stream.id, reason: 'Deleted by user' })}
         emptyMessage="No streams found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalStreams,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

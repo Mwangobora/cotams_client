@@ -2,7 +2,7 @@
  * Lecturers List Feature
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -16,20 +16,22 @@ export function LecturersPage() {
   const [selectedLecturer, setSelectedLecturer] = useState<Lecturer | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const api = new LecturersApi();
 
-  const { data: lecturersResponse, isLoading } = useQuery<Lecturer[] | { results: Lecturer[] }>({
-    queryKey: ['lecturers'],
-    queryFn: () => api.getLecturers()
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
+
+  const { data: lecturersResponse, isLoading } = useQuery({
+    queryKey: ['lecturers', searchTerm, page, pageSize],
+    queryFn: () => api.getLecturers({ search: searchTerm, page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
-  const lecturers: Lecturer[] = Array.isArray(lecturersResponse) ? lecturersResponse : lecturersResponse?.results || [];
-
-  const filteredLecturers = lecturers.filter((lecturer: any) =>
-    lecturer.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lecturer.employee_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lecturer.department?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : lecturersResponse?.results || [];
+  const totalLecturers = Array.isArray(lecturersResponse) ? lecturersResponse.length : lecturersResponse?.count || 0;
 
   const columns = [
     {
@@ -88,7 +90,7 @@ export function LecturersPage() {
         <CardContent>
           <DataTable
             columns={columns}
-            data={filteredLecturers}
+            data={lecturers}
             loading={isLoading}
             onEdit={handleViewDetails}
             actions={true}
@@ -98,6 +100,13 @@ export function LecturersPage() {
                 ? `No lecturers found matching "${searchTerm}"`
                 : "No lecturers found"
             }
+            pagination={{
+              page,
+              pageSize,
+              total: totalLecturers,
+              onPageChange: setPage,
+              onPageSizeChange: setPageSize,
+            }}
           />
         </CardContent>
       </Card>

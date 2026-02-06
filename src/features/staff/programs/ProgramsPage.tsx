@@ -58,6 +58,8 @@ export function ProgramsPage() {
   const departmentId = user?.staff_profile?.department || '';
   const departmentName = user?.staff_profile?.department_name || '';
   const [selectedDepartment, setSelectedDepartment] = useState(departmentId);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     if (departmentId && !selectedDepartment) {
@@ -82,13 +84,17 @@ export function ProgramsPage() {
   });
 
   const { data: programsResponse, isLoading } = useQuery({
-    queryKey: ['programs', 'staff'],
-    queryFn: () => api.getPrograms(),
+    queryKey: ['programs', 'staff', page, pageSize],
+    queryFn: () => api.getPrograms({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const programs = Array.isArray(programsResponse)
     ? programsResponse
     : programsResponse?.results || [];
+  const totalPrograms = Array.isArray(programsResponse)
+    ? programsResponse.length
+    : programsResponse?.count || 0;
   const departments = Array.isArray(departmentsResponse)
     ? departmentsResponse
     : departmentsResponse?.results || [];
@@ -220,6 +226,13 @@ export function ProgramsPage() {
         actions
         editButtonText="Edit"
         emptyMessage="No programs found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalPrograms,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

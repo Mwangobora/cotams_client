@@ -13,14 +13,18 @@ import { ProgramDetailsDialog } from './ProgramDetailsDialog';
 export function ProgramsPage() {
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const api = new ProgramsApi();
 
   const { data: programsResponse, isLoading } = useQuery({
-    queryKey: ['programs'],
-    queryFn: () => api.getPrograms()
+    queryKey: ['programs', page, pageSize],
+    queryFn: () => api.getPrograms({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const programs = Array.isArray(programsResponse) ? programsResponse : programsResponse?.results || [];
+  const totalPrograms = Array.isArray(programsResponse) ? programsResponse.length : programsResponse?.count || 0;
 
   const columns = [
     {
@@ -75,6 +79,13 @@ export function ProgramsPage() {
         actions={true}
         editButtonText="View Details"
         emptyMessage="No programs found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalPrograms,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <ProgramDetailsDialog

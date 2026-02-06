@@ -2,6 +2,7 @@
  * Sessions Management Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Session {
   id: string;
   stream: string;
@@ -47,7 +48,7 @@ export interface SessionFormData {
   semester: Semester;
 }
 
-export interface SessionFilters {
+export interface SessionFilters extends QueryParams {
   academic_year?: string;
   semester?: Semester;
   day_of_week?: DayOfWeek;

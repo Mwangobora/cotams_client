@@ -11,7 +11,9 @@ export class LecturersApi {
   /**
    * Get lecturers with filters
    */
-  async getLecturers(filters: LecturerFilters = {}): Promise<Lecturer[]> {
+  async getLecturers(
+    filters: LecturerFilters = {}
+  ): Promise<{ results: Lecturer[]; count: number }> {
     try {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -20,12 +22,13 @@ export class LecturersApi {
         }
       });
 
+      const query = params.toString();
       const response = await axios.get<{ results: any[]; count: number }>(
-        `${API_ENDPOINTS.accounts.lecturers}&${params.toString()}`
+        `${API_ENDPOINTS.accounts.lecturers}${query ? `&${query}` : ''}`
       );
       
       // Transform the backend response to our frontend format
-      return response.data.results.map((lecturer: any) => ({
+      const results = response.data.results.map((lecturer: any) => ({
         id: lecturer.id,
         name: lecturer.user?.full_name || 
               `${lecturer.user?.first_name || ''} ${lecturer.user?.last_name || ''}`.trim() || 
@@ -45,6 +48,7 @@ export class LecturersApi {
         courses: lecturer.courses || [],
         schedule: lecturer.schedule || []
       }));
+      return { results, count: response.data.count };
     } catch (error) {
       throw normalizeAxiosError(error);
     }

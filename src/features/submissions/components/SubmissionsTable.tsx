@@ -9,6 +9,11 @@ interface SubmissionsTableProps {
   isAdmin: boolean;
   isLoading: boolean;
   onView: (submission: AcademicSubmission) => void;
+  page: number;
+  pageSize: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
 }
 
 export function SubmissionsTable({
@@ -16,6 +21,11 @@ export function SubmissionsTable({
   isAdmin,
   isLoading,
   onView,
+  page,
+  pageSize,
+  total,
+  onPageChange,
+  onPageSizeChange,
 }: SubmissionsTableProps) {
   const columns = useMemo(
     () => [
@@ -64,6 +74,13 @@ export function SubmissionsTable({
       editButtonText="View"
       actions
       emptyMessage="No submissions found"
+      pagination={{
+        page,
+        pageSize,
+        total,
+        onPageChange,
+        onPageSizeChange,
+      }}
     />
   );
 }

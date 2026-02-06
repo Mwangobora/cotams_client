@@ -2,7 +2,7 @@
  * Users Table with Role Assignment
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { DataTable } from '@/components/shared/DataTable';
@@ -14,33 +14,33 @@ import { getUserColumns } from './UsersTableColumns';
 import type { AdminUser, CreateUserPayload, UpdateUserPayload } from '@/types/rbac';
 
 export function UsersTable() {
-  const {
-    users,
-    roles,
-    isLoading,
-    createUser,
-    updateUser,
-    deactivateUser,
-    assignRoles,
-  } = useAdminUsers();
-
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [assignOpen, setAssignOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const filteredUsers = useMemo(() => {
-    if (!query.trim()) return users;
-    const q = query.toLowerCase();
-    return users.filter(
-      (user) =>
-        user.email.toLowerCase().includes(q) ||
-        user.first_name.toLowerCase().includes(q) ||
-        user.last_name.toLowerCase().includes(q)
-    );
-  }, [users, query]);
+  const {
+    users,
+    totalUsers,
+    roles,
+    isLoading,
+    createUser,
+    updateUser,
+    deactivateUser,
+    assignRoles,
+  } = useAdminUsers({
+    page,
+    pageSize,
+    search: query,
+  });
+
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
 
   const columns = useMemo(
     () =>
@@ -72,13 +72,13 @@ export function UsersTable() {
           onChange={(e) => setQuery(e.target.value)}
           className="sm:max-w-xs"
         />
-        <div className="text-sm text-muted-foreground">{filteredUsers.length} users</div>
+        <div className="text-sm text-muted-foreground">{totalUsers} users</div>
       </div>
 
       <DataTable
         title="Users"
         columns={columns}
-        data={filteredUsers}
+        data={users}
         loading={isLoading}
         onAdd={() => {
           setFormMode('create');
@@ -88,6 +88,13 @@ export function UsersTable() {
         addButtonText="Add User"
         actions={false}
         emptyMessage="No users found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalUsers,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <UserFormDialog

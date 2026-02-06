@@ -5,6 +5,7 @@
 import axios from '@/services/api';
 import { normalizeAxiosError } from '@/features/auth/errors';
 import { API_ENDPOINTS } from '@/config/endpoints';
+import type { QueryParams } from '@/types/api.type';
 import type { ProgramYear } from '@/types/programs';
 
 export interface ProgramYearFormData {
@@ -14,7 +15,7 @@ export interface ProgramYearFormData {
   is_active: boolean;
 }
 
-export interface ProgramYearFilters {
+export interface ProgramYearFilters extends QueryParams {
   program?: string;
   is_active?: boolean;
 }

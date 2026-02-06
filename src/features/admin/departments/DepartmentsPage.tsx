@@ -30,6 +30,8 @@ export function DepartmentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selected, setSelected] = useState<Department | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [formData, setFormData] = useState<DepartmentFormData>({
     code: '',
@@ -39,13 +41,17 @@ export function DepartmentsPage() {
   });
 
   const { data: departmentsResponse, isLoading } = useQuery({
-    queryKey: ['departments'],
-    queryFn: () => api.getDepartments(),
+    queryKey: ['departments', page, pageSize],
+    queryFn: () => api.getDepartments({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const departments = Array.isArray(departmentsResponse)
     ? departmentsResponse
     : departmentsResponse?.results || [];
+  const totalDepartments = Array.isArray(departmentsResponse)
+    ? departmentsResponse.length
+    : departmentsResponse?.count || 0;
 
   const createMutation = useMutation({
     mutationFn: (data: DepartmentFormData) => api.createDepartment(data),
@@ -169,6 +175,13 @@ export function DepartmentsPage() {
         editButtonText="Edit"
         deleteButtonText="Delete"
         emptyMessage="No departments found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalDepartments,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

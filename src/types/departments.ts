@@ -2,6 +2,7 @@
  * Departments Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Department {
   id: string;
   code: string;
@@ -23,7 +24,7 @@ export interface DepartmentFormData {
   head_id?: string | null;
 }
 
-export interface DepartmentFilters {
+export interface DepartmentFilters extends QueryParams {
   search?: string;
   is_active?: boolean;
   code?: string;

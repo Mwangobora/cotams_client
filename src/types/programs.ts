@@ -2,6 +2,7 @@
  * Programs Management Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Program {
   id: string;
   code: string;
@@ -48,7 +49,7 @@ export interface ProgramFormData {
   is_active: boolean;
 }
 
-export interface ProgramFilters {
+export interface ProgramFilters extends QueryParams {
   search?: string;
   is_active?: boolean;
   duration_years?: number;

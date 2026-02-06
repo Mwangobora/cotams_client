@@ -2,7 +2,7 @@
  * Program Years Management Feature (Staff)
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
@@ -47,6 +47,12 @@ export function ProgramYearsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedProgram]);
   const [formData, setFormData] = useState<ProgramYearFormState>({
     program: '',
     year_number: 1,
@@ -64,15 +70,21 @@ export function ProgramYearsPage() {
 
   const selectedProgramFilter = selectedProgram === '__all' ? '' : selectedProgram;
   const { data: yearsResponse, isLoading } = useQuery({
-    queryKey: ['program-years', selectedProgramFilter],
+    queryKey: ['program-years', selectedProgramFilter, page, pageSize],
     queryFn: () =>
       programYearsApi.getProgramYears(
-        selectedProgramFilter ? { program: selectedProgramFilter } : {}
+        selectedProgramFilter
+          ? { program: selectedProgramFilter, page, page_size: pageSize }
+          : { page, page_size: pageSize }
       ),
+    keepPreviousData: true,
   });
   const programYears = Array.isArray(yearsResponse)
     ? yearsResponse
     : yearsResponse?.results || [];
+  const totalProgramYears = Array.isArray(yearsResponse)
+    ? yearsResponse.length
+    : yearsResponse?.count || 0;
 
   const createMutation = useMutation({
     mutationFn: (data: ProgramYearFormData) => programYearsApi.createProgramYear(data),
@@ -213,6 +225,13 @@ export function ProgramYearsPage() {
         editButtonText="Edit"
         deleteButtonText="Delete"
         emptyMessage="No program years found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalProgramYears,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

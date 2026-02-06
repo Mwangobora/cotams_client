@@ -2,7 +2,7 @@
  * Module Lecturer Assignments (Staff)
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/shared/DataTable';
@@ -59,10 +59,13 @@ export function ModuleLecturersPage() {
   const [selected, setSelected] = useState<ModuleLecturerAssignment | null>(null);
   const [formData, setFormData] = useState<ModuleLecturerFormData>(defaultForm);
   const [selectedDepartment, setSelectedDepartment] = useState(staffDepartmentId);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: assignmentsResponse, isLoading } = useQuery({
-    queryKey: ['module-lecturers'],
-    queryFn: () => assignmentsApi.getAssignments(),
+    queryKey: ['module-lecturers', page, pageSize],
+    queryFn: () => assignmentsApi.getAssignments({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const { data: departmentsResponse, isLoading: loadingDepartments } = useQuery({
@@ -87,6 +90,9 @@ export function ModuleLecturersPage() {
   const assignments = Array.isArray(assignmentsResponse)
     ? assignmentsResponse
     : assignmentsResponse?.results || [];
+  const totalAssignments = Array.isArray(assignmentsResponse)
+    ? assignmentsResponse.length
+    : assignmentsResponse?.count || 0;
   const modules = Array.isArray(modulesResponse)
     ? modulesResponse
     : modulesResponse?.results || [];
@@ -94,6 +100,10 @@ export function ModuleLecturersPage() {
   const departments = Array.isArray(departmentsResponse)
     ? departmentsResponse
     : departmentsResponse?.results || [];
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedDepartment]);
 
   const createMutation = useMutation({
     mutationFn: (data: ModuleLecturerFormData) => assignmentsApi.createAssignment(data),
@@ -213,6 +223,13 @@ export function ModuleLecturersPage() {
         actions
         editButtonText="Edit"
         emptyMessage="No assignments found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalAssignments,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

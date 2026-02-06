@@ -16,15 +16,19 @@ export function SessionsPage() {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const queryClient = useQueryClient();
   const api = new SessionsApi();
 
   const { data: sessionsResponse, isLoading } = useQuery({
-    queryKey: ['sessions'],
-    queryFn: () => api.getSessions()
+    queryKey: ['sessions', page, pageSize],
+    queryFn: () => api.getSessions({ page, page_size: pageSize }),
+    keepPreviousData: true,
   });
 
   const sessions = Array.isArray(sessionsResponse) ? sessionsResponse : sessionsResponse?.results || [];
+  const totalSessions = Array.isArray(sessionsResponse) ? sessionsResponse.length : sessionsResponse?.count || 0;
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.deleteSession(id),
@@ -100,6 +104,13 @@ export function SessionsPage() {
         onDelete={handleDelete}
         addButtonText="Add Session"
         emptyMessage="No sessions found"
+        pagination={{
+          page,
+          pageSize,
+          total: totalSessions,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
+        }}
       />
 
       <SessionFormDialog

@@ -2,6 +2,7 @@
  * Lecturers Types
  */
 
+import type { QueryParams } from './api.type';
 export interface Course {
   id: string;
   name: string;
@@ -38,7 +39,7 @@ export interface Lecturer {
   schedule?: ScheduleSession[];
 }
 
-export interface LecturerFilters {
+export interface LecturerFilters extends QueryParams {
   search?: string;
   department?: string;
   is_active?: boolean;

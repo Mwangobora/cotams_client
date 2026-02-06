@@ -1,12 +1,22 @@
 import axios from '@/services/api';
 import { normalizeAxiosError } from '@/features/auth/errors';
 import { API_ENDPOINTS } from '@/config/endpoints';
+import type { QueryParams } from '@/types/api.type';
 import type { AdminUser, CreateUserPayload, UpdateUserPayload } from '@/types/rbac';
 
 export class AdminUsersApi {
-  async listUsers(): Promise<{ results: AdminUser[]; count: number } | AdminUser[]> {
+  async listUsers(params: QueryParams = {}): Promise<{ results: AdminUser[]; count: number }> {
     try {
-      const response = await axios.get(API_ENDPOINTS.accounts.adminUsers);
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          searchParams.append(key, value.toString());
+        }
+      });
+      const query = searchParams.toString();
+      const response = await axios.get(
+        `${API_ENDPOINTS.accounts.adminUsers}${query ? `?${query}` : ''}`
+      );
       return response.data;
     } catch (error) {
       throw normalizeAxiosError(error);

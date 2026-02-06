@@ -19,6 +19,7 @@ export function useSessionOptions({
   selectedProgram,
   selectedProgramYear,
 }: UseSessionOptionsParams) {
+  const pageSizeAll = 1000;
   const roomsApi = new RoomsApi();
   const moduleLecturersApi = new ModuleLecturersApi();
   const submissionsApi = new SubmissionsApi();
@@ -30,14 +31,14 @@ export function useSessionOptions({
 
   const { data: roomsResponse } = useQuery({
     queryKey: ['rooms'],
-    queryFn: () => roomsApi.getRooms(),
+    queryFn: () => roomsApi.getRooms({ page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
   const rooms = Array.isArray(roomsResponse) ? roomsResponse : roomsResponse?.results || [];
 
   const { data: programsResponse } = useQuery({
     queryKey: ['programs'],
-    queryFn: () => programsApi.getPrograms(),
+    queryFn: () => programsApi.getPrograms({ page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
   const programs = Array.isArray(programsResponse)
@@ -47,7 +48,11 @@ export function useSessionOptions({
   const { data: programYearsResponse } = useQuery({
     queryKey: ['program-years', selectedProgram],
     queryFn: () =>
-      programYearsApi.getProgramYears(selectedProgram ? { program: selectedProgram } : {}),
+      programYearsApi.getProgramYears(
+        selectedProgram
+          ? { program: selectedProgram, page: 1, page_size: pageSizeAll }
+          : { page: 1, page_size: pageSizeAll }
+      ),
     enabled: open,
   });
   const programYears = Array.isArray(programYearsResponse)
@@ -57,7 +62,11 @@ export function useSessionOptions({
   const { data: streamsResponse } = useQuery({
     queryKey: ['streams', selectedProgramYear],
     queryFn: () =>
-      streamsApi.getStreams(selectedProgramYear ? { program_year: selectedProgramYear } : {}),
+      streamsApi.getStreams(
+        selectedProgramYear
+          ? { program_year: selectedProgramYear, page: 1, page_size: pageSizeAll }
+          : { page: 1, page_size: pageSizeAll }
+      ),
     enabled: open,
   });
   const streams = Array.isArray(streamsResponse)
@@ -66,7 +75,7 @@ export function useSessionOptions({
 
   const { data: assignmentsResponse } = useQuery({
     queryKey: ['module-lecturers'],
-    queryFn: () => moduleLecturersApi.getAssignments(),
+    queryFn: () => moduleLecturersApi.getAssignments({ page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
   const assignments = Array.isArray(assignmentsResponse)
@@ -75,7 +84,8 @@ export function useSessionOptions({
 
   const { data: submissionsResponse } = useQuery({
     queryKey: ['submissions', 'submitted'],
-    queryFn: () => submissionsApi.getSubmissions({ status: 'SUBMITTED' }),
+    queryFn: () =>
+      submissionsApi.getSubmissions({ status: 'SUBMITTED', page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
   const submissions = Array.isArray(submissionsResponse)
@@ -84,17 +94,19 @@ export function useSessionOptions({
 
   const { data: modulesResponse } = useQuery({
     queryKey: ['modules'],
-    queryFn: () => modulesApi.getModules(),
+    queryFn: () => modulesApi.getModules({ page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
   const modules = Array.isArray(modulesResponse) ? modulesResponse : modulesResponse?.results || [];
 
   const { data: lecturersResponse } = useQuery({
     queryKey: ['lecturers'],
-    queryFn: () => lecturersApi.getLecturers(),
+    queryFn: () => lecturersApi.getLecturers({ page: 1, page_size: pageSizeAll }),
     enabled: open,
   });
-  const lecturers = Array.isArray(lecturersResponse) ? lecturersResponse : [];
+  const lecturers = Array.isArray(lecturersResponse)
+    ? lecturersResponse
+    : lecturersResponse?.results || [];
 
   return {
     rooms,
