@@ -9,9 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRegisterStaffMutation } from '../mutations';
-import { validateRegisterForm } from '../validators';
-import { ApiError } from '../errors';
-import { AlertCircle, Loader2, Info } from 'lucide-react';
+import { validateEmail, validatePassword, validatePasswordConfirm, validateRegisterForm, validateRequired } from '../validators';
+import { Loader2, Info } from 'lucide-react';
 
 export function RegisterStaffForm() {
   const [formData, setFormData] = useState({
@@ -24,7 +23,7 @@ export function RegisterStaffForm() {
     title: '',
     phone_number: '',
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const registerMutation = useRegisterStaffMutation();
 
@@ -34,8 +33,6 @@ export function RegisterStaffForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
-
     const validation = validateRegisterForm(
       formData.email,
       formData.password,
@@ -50,14 +47,28 @@ export function RegisterStaffForm() {
     }
 
     if (!validation.isValid) {
-      setErrors(validation.errors);
+      setTouched({
+        email: true,
+        password: true,
+        password_confirm: true,
+        first_name: true,
+        last_name: true,
+        employee_id: true,
+      });
       return;
     }
 
     registerMutation.mutate(formData);
   };
 
-  const apiError = registerMutation.error as ApiError | null;
+  const firstNameError = validateRequired(formData.first_name, 'First name');
+  const lastNameError = validateRequired(formData.last_name, 'Last name');
+  const emailError = validateEmail(formData.email);
+  const empError = validateRequired(formData.employee_id, 'Employee ID');
+  const passwordError = validatePassword(formData.password);
+  const confirmError = validatePasswordConfirm(formData.password, formData.password_confirm);
+  const ok = (name: string, err: string | null) => touched[name] && !err;
+  const bad = (name: string, err: string | null) => touched[name] && err;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -65,49 +76,34 @@ export function RegisterStaffForm() {
         <Info className="h-4 w-4" />
         <AlertDescription>Staff registration may require admin approval or a secret key.</AlertDescription>
       </Alert>
-      {registerMutation.isError && apiError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {apiError.details?.length
-              ? apiError.details.map((d, i) => (
-                  <div key={i}>{d.field ? `${d.field}: ${d.message}` : d.message}</div>
-                ))
-              : apiError.message}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="first_name">First Name</Label>
-          <Input id="first_name" value={formData.first_name} onChange={handleChange('first_name')} disabled={registerMutation.isPending} className="h-11 text-base" />
-          {errors.first_name && (
-            <p className="text-sm text-destructive">{errors.first_name}</p>
-          )}
+          <Input id="first_name" value={formData.first_name} onChange={handleChange('first_name')} onBlur={() => setTouched((p) => ({ ...p, first_name: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+          {bad('first_name', firstNameError) && <p className="text-sm text-destructive">{firstNameError}</p>}
+          {ok('first_name', firstNameError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Looks good.</p>}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="last_name">Last Name</Label>
-          <Input id="last_name" value={formData.last_name} onChange={handleChange('last_name')} disabled={registerMutation.isPending} className="h-11 text-base" />
-          {errors.last_name && (
-            <p className="text-sm text-destructive">{errors.last_name}</p>
-          )}
+          <Input id="last_name" value={formData.last_name} onChange={handleChange('last_name')} onBlur={() => setTouched((p) => ({ ...p, last_name: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+          {bad('last_name', lastNameError) && <p className="text-sm text-destructive">{lastNameError}</p>}
+          {ok('last_name', lastNameError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Looks good.</p>}
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" value={formData.email} onChange={handleChange('email')} disabled={registerMutation.isPending} className="h-11 text-base" />
-        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+        <Input id="email" type="email" value={formData.email} onChange={handleChange('email')} onBlur={() => setTouched((p) => ({ ...p, email: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+        {bad('email', emailError) && <p className="text-sm text-destructive">{emailError}</p>}
+        {ok('email', emailError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Email looks good.</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="employee_id">Employee ID</Label>
-        <Input id="employee_id" placeholder="e.g., EMP001" value={formData.employee_id} onChange={handleChange('employee_id')} disabled={registerMutation.isPending} className="h-11 text-base" />
-        {errors.employee_id && (
-          <p className="text-sm text-destructive">{errors.employee_id}</p>
-        )}
+        <Input id="employee_id" placeholder="e.g., EMP001" value={formData.employee_id} onChange={handleChange('employee_id')} onBlur={() => setTouched((p) => ({ ...p, employee_id: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+        {bad('employee_id', empError) && <p className="text-sm text-destructive">{empError}</p>}
+        {ok('employee_id', empError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Looks good.</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -124,18 +120,16 @@ export function RegisterStaffForm() {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input id="password" type="password" value={formData.password} onChange={handleChange('password')} disabled={registerMutation.isPending} className="h-11 text-base" />
-        {errors.password && (
-          <p className="text-sm text-destructive">{errors.password}</p>
-        )}
+        <Input id="password" type="password" value={formData.password} onChange={handleChange('password')} onBlur={() => setTouched((p) => ({ ...p, password: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+        {bad('password', passwordError) && <p className="text-sm text-destructive">{passwordError}</p>}
+        {ok('password', passwordError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Strong password.</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="password_confirm">Confirm Password</Label>
-        <Input id="password_confirm" type="password" value={formData.password_confirm} onChange={handleChange('password_confirm')} disabled={registerMutation.isPending} className="h-11 text-base" />
-        {errors.password_confirm && (
-          <p className="text-sm text-destructive">{errors.password_confirm}</p>
-        )}
+        <Input id="password_confirm" type="password" value={formData.password_confirm} onChange={handleChange('password_confirm')} onBlur={() => setTouched((p) => ({ ...p, password_confirm: true }))} disabled={registerMutation.isPending} className="h-11 text-base" />
+        {bad('password_confirm', confirmError) && <p className="text-sm text-destructive">{confirmError}</p>}
+        {ok('password_confirm', confirmError) && <p className="text-sm text-emerald-600 dark:text-emerald-400">Passwords match.</p>}
       </div>
 
       <Button type="submit" className="h-11 w-full text-base" disabled={registerMutation.isPending}>

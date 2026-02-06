@@ -7,41 +7,38 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useLoginMutation } from '../mutations';
-import { validateLoginForm } from '../validators';
-import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { validateEmail, validateLoginForm } from '../validators';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState({ email: false, password: false });
 
   const loginMutation = useLoginMutation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
-
     const validation = validateLoginForm(email, password);
     if (!validation.isValid) {
-      setErrors(validation.errors);
+      setTouched({ email: true, password: true });
       return;
     }
 
     loginMutation.mutate({ email, password });
   };
 
+  const emailError = validateEmail(email);
+  const passwordError = !password ? 'Password is required' : null;
+  const showEmailError = touched.email && emailError;
+  const showEmailOk = touched.email && !emailError;
+  const showPasswordError = touched.password && passwordError;
+  const showPasswordOk = touched.password && !passwordError;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {loginMutation.isError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{loginMutation.error.message}</AlertDescription>
-        </Alert>
-      )}
-
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -50,10 +47,12 @@ export function LoginForm() {
           placeholder="student@cotams.edu"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
           disabled={loginMutation.isPending}
           className="h-11 text-base"
         />
-        {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+        {showEmailError && <p className="text-sm text-destructive">{emailError}</p>}
+        {showEmailOk && <p className="text-sm text-emerald-600 dark:text-emerald-400">Email looks good.</p>}
       </div>
 
       <div className="space-y-2">
@@ -72,6 +71,7 @@ export function LoginForm() {
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
             disabled={loginMutation.isPending}
             className="h-11 pr-10 text-base"
           />
@@ -85,9 +85,8 @@ export function LoginForm() {
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
-        {errors.password && (
-          <p className="text-sm text-destructive">{errors.password}</p>
-        )}
+        {showPasswordError && <p className="text-sm text-destructive">{passwordError}</p>}
+        {showPasswordOk && <p className="text-sm text-emerald-600 dark:text-emerald-400">Password looks good.</p>}
       </div>
 
       <Button
