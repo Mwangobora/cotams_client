@@ -60,14 +60,11 @@ export function RegisterStaffForm() {
   const apiError = registerMutation.error as ApiError | null;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <Alert>
         <Info className="h-4 w-4" />
-        <AlertDescription>
-          Staff registration may require admin approval or a secret key.
-        </AlertDescription>
+        <AlertDescription>Staff registration may require admin approval or a secret key.</AlertDescription>
       </Alert>
-
       {registerMutation.isError && apiError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -81,15 +78,10 @@ export function RegisterStaffForm() {
         </Alert>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="first_name">First Name</Label>
-          <Input
-            id="first_name"
-            value={formData.first_name}
-            onChange={handleChange('first_name')}
-            disabled={registerMutation.isPending}
-          />
+          <Input id="first_name" value={formData.first_name} onChange={handleChange('first_name')} disabled={registerMutation.isPending} className="h-11 text-base" />
           {errors.first_name && (
             <p className="text-sm text-destructive">{errors.first_name}</p>
           )}
@@ -97,12 +89,7 @@ export function RegisterStaffForm() {
 
         <div className="space-y-2">
           <Label htmlFor="last_name">Last Name</Label>
-          <Input
-            id="last_name"
-            value={formData.last_name}
-            onChange={handleChange('last_name')}
-            disabled={registerMutation.isPending}
-          />
+          <Input id="last_name" value={formData.last_name} onChange={handleChange('last_name')} disabled={registerMutation.isPending} className="h-11 text-base" />
           {errors.last_name && (
             <p className="text-sm text-destructive">{errors.last_name}</p>
           )}
@@ -111,63 +98,33 @@ export function RegisterStaffForm() {
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange('email')}
-          disabled={registerMutation.isPending}
-        />
+        <Input id="email" type="email" value={formData.email} onChange={handleChange('email')} disabled={registerMutation.isPending} className="h-11 text-base" />
         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="employee_id">Employee ID</Label>
-        <Input
-          id="employee_id"
-          placeholder="e.g., EMP001"
-          value={formData.employee_id}
-          onChange={handleChange('employee_id')}
-          disabled={registerMutation.isPending}
-        />
+        <Input id="employee_id" placeholder="e.g., EMP001" value={formData.employee_id} onChange={handleChange('employee_id')} disabled={registerMutation.isPending} className="h-11 text-base" />
         {errors.employee_id && (
           <p className="text-sm text-destructive">{errors.employee_id}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="title">Title (Optional)</Label>
-          <Input
-            id="title"
-            placeholder="e.g., Manager"
-            value={formData.title}
-            onChange={handleChange('title')}
-            disabled={registerMutation.isPending}
-          />
+          <Input id="title" placeholder="e.g., Manager" value={formData.title} onChange={handleChange('title')} disabled={registerMutation.isPending} className="h-11 text-base" />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="phone_number">Phone (Optional)</Label>
-          <Input
-            id="phone_number"
-            placeholder="e.g., +255..."
-            value={formData.phone_number}
-            onChange={handleChange('phone_number')}
-            disabled={registerMutation.isPending}
-          />
+          <Input id="phone_number" placeholder="e.g., +255..." value={formData.phone_number} onChange={handleChange('phone_number')} disabled={registerMutation.isPending} className="h-11 text-base" />
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange('password')}
-          disabled={registerMutation.isPending}
-        />
+        <Input id="password" type="password" value={formData.password} onChange={handleChange('password')} disabled={registerMutation.isPending} className="h-11 text-base" />
         {errors.password && (
           <p className="text-sm text-destructive">{errors.password}</p>
         )}
@@ -175,19 +132,13 @@ export function RegisterStaffForm() {
 
       <div className="space-y-2">
         <Label htmlFor="password_confirm">Confirm Password</Label>
-        <Input
-          id="password_confirm"
-          type="password"
-          value={formData.password_confirm}
-          onChange={handleChange('password_confirm')}
-          disabled={registerMutation.isPending}
-        />
+        <Input id="password_confirm" type="password" value={formData.password_confirm} onChange={handleChange('password_confirm')} disabled={registerMutation.isPending} className="h-11 text-base" />
         {errors.password_confirm && (
           <p className="text-sm text-destructive">{errors.password_confirm}</p>
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+      <Button type="submit" className="h-11 w-full text-base" disabled={registerMutation.isPending}>
         {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Register as Staff
       </Button>

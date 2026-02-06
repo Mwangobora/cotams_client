@@ -34,7 +34,7 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {loginMutation.isError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -51,6 +51,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={loginMutation.isPending}
+          className="h-11 text-base"
         />
         {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
       </div>
@@ -72,7 +73,7 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loginMutation.isPending}
-            className="pr-10"
+            className="h-11 pr-10 text-base"
           />
           <button
             type="button"
@@ -91,14 +92,14 @@ export function LoginForm() {
 
       <Button
         type="submit"
-        className="w-full"
+        className="h-11 w-full text-base"
         disabled={loginMutation.isPending}
       >
         {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Sign in
       </Button>
 
-      <div className="text-center text-sm">
+      <div className="text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
         <Link to="/auth/register/student" className="text-primary hover:underline">
           Register as Student
