@@ -25,6 +25,7 @@ import { LecturersPage as StaffLecturersPage } from '@/features/staff/lecturers/
 import { ProgramsPage as StaffProgramsPage } from '@/features/staff/programs/ProgramsPage';
 import { ProgramYearsPage } from '@/features/staff/program-years/ProgramYearsPage';
 import { StreamsPage } from '@/features/staff/streams/StreamsPage';
+import { CurriculumPage } from '@/features/staff/curriculum/CurriculumPage';
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 import { NotificationsPage } from '@/features/notifications/NotificationsPage';
 
@@ -71,6 +72,7 @@ export function AppRouter() {
                 <Route path="programs" element={<StaffProgramsPage />} />
                 <Route path="program-years" element={<ProgramYearsPage />} />
                 <Route path="streams" element={<StreamsPage />} />
+                <Route path="curriculum" element={<CurriculumPage />} />
                 <Route path="lecturers" element={<StaffLecturersPage />} />
                 <Route path="module-lecturers" element={<ModuleLecturersPage />} />
                 <Route path="submissions" element={<SubmissionsPage />} />
