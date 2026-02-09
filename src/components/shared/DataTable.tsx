@@ -13,7 +13,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DeleteConfirmDialog } from '@/components/ui/delete-confirm-dialog';
+import { ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface Column<T> {
@@ -69,6 +71,8 @@ export function DataTable<T extends { id: string | number }>({
 }: DataTableProps<T>) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<T | null>(null);
 
   const isControlled = Boolean(pagination);
   const effectivePage = isControlled ? pagination!.page : page;
@@ -116,8 +120,21 @@ export function DataTable<T extends { id: string | number }>({
     totalItems === 0 ? 0 : (effectivePage - 1) * effectivePageSize + 1;
   const endItem = Math.min(effectivePage * effectivePageSize, totalItems);
 
+  const handleDeleteClick = (item: T) => {
+    setItemToDelete(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (itemToDelete && onDelete) {
+      onDelete(itemToDelete);
+      setItemToDelete(null);
+    }
+  };
+
   return (
-    <Card>
+    <TooltipProvider>
+      <Card>
       {title && (
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{title}</CardTitle>
@@ -166,27 +183,72 @@ export function DataTable<T extends { id: string | number }>({
                     ))}
                     {actions && (onEdit || onDelete) && (
                       <TableCell>
-                        <div className="flex gap-2">
-                          {onEdit && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="border-yellow-500/40 text-yellow-700 hover:bg-yellow-500/10 hover:text-yellow-800"
-                              onClick={() => onEdit(item)}
-                            >
-                              {editButtonText}
-                            </Button>
-                          )}
-                          {onDelete && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700"
-                              onClick={() => onDelete(item)}
-                            >
-                              {deleteButtonText}
-                            </Button>
-                          )}
+                        <div className="flex items-center gap-3">
+                          {/* Desktop: Icon-only with tooltips */}
+                          <div className="hidden md:flex items-center gap-3">
+                            {onEdit && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    variant="ghost-edit" 
+                                    size="icon"
+                                    className="h-9 w-9"
+                                    onClick={() => onEdit(item)}
+                                    aria-label={`Edit ${editButtonText}`}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{editButtonText}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                            {onDelete && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    variant="ghost-delete" 
+                                    size="icon"
+                                    className="h-9 w-9"
+                                    onClick={() => handleDeleteClick(item)}
+                                    aria-label={`Delete ${deleteButtonText}`}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{deleteButtonText}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+
+                          {/* Mobile: Icon + Label */}
+                          <div className="flex md:hidden items-center gap-2">
+                            {onEdit && (
+                              <Button 
+                                variant="ghost-edit" 
+                                size="sm"
+                                onClick={() => onEdit(item)}
+                                className="h-8 gap-1.5"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                                <span>{editButtonText}</span>
+                              </Button>
+                            )}
+                            {onDelete && (
+                              <Button 
+                                variant="ghost-delete" 
+                                size="sm"
+                                onClick={() => handleDeleteClick(item)}
+                                className="h-8 gap-1.5"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>{deleteButtonText}</span>
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                     )}
@@ -267,6 +329,16 @@ export function DataTable<T extends { id: string | number }>({
           </div>
         )}
       </CardContent>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        title={`Delete ${deleteButtonText.toLowerCase()}?`}
+        description="This action cannot be undone."
+        confirmText={deleteButtonText}
+      />
     </Card>
+    </TooltipProvider>
   );
 }

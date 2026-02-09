@@ -21,6 +21,10 @@ const buttonVariants = cva(
         link: "text-[#0992C2] underline-offset-4 hover:underline hover:text-[#0781AC]",
         accent:
           "bg-[#0AC4E0] text-accent-foreground shadow-sm hover:bg-[#08B0C9] active:bg-[#079DB4] font-semibold",
+        "ghost-edit":
+          "text-[#64748B] hover:bg-[#F1F5F9] active:bg-[#E2E8F0] focus-visible:ring-[#0AC4E0] dark:text-[#94A3B8] dark:hover:bg-[#0B1220] dark:active:bg-[#0F172A]",
+        "ghost-delete":
+          "text-[#DC2626] hover:bg-[#FEE2E2] active:bg-[#FECACA] focus-visible:ring-[#DC2626] dark:text-[#F87171] dark:hover:bg-[#450A0A] dark:active:bg-[#7F1D1D] dark:focus-visible:ring-[#F87171]",
       },
       size: {
         default: "h-10 px-4 py-2",
