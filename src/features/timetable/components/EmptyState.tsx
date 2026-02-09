@@ -51,17 +51,17 @@ export function EmptyState({
   const Icon = config.icon;
 
   return (
-    <Card className="border-dashed">
+    <Card className="border-dashed border-[#E5E7EB] bg-white">
       <CardContent className="p-12 text-center">
-        <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-          <Icon className="h-6 w-6 text-muted-foreground" />
+        <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[#F0FAFD] flex items-center justify-center">
+          <Icon className="h-6 w-6 text-[#0992C2]" />
         </div>
         
-        <h3 className="mb-2 text-lg font-medium text-foreground">
+        <h3 className="mb-2 text-lg font-semibold text-[#0F172A]">
           {config.title}
         </h3>
         
-        <p className="mb-4 text-sm text-muted-foreground max-w-sm mx-auto">
+        <p className="mb-4 text-sm text-[#64748B] max-w-sm mx-auto">
           {config.description}
         </p>
 
@@ -72,7 +72,7 @@ export function EmptyState({
         )}
 
         {type === 'sessions' && (
-          <div className="mt-6 text-xs text-muted-foreground">
+          <div className="mt-6 text-xs text-[#94A3B8]">
             <p>Try clearing filters or checking different time periods</p>
           </div>
         )}

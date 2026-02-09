@@ -30,23 +30,23 @@ export function SessionCard({ session, variant = 'grid', className }: SessionCar
         onClick={() => setShowDetails(true)}
       >
         <Card className={cn(
-          'cursor-pointer transition-colors hover:bg-muted/50',
+          'cursor-pointer transition-all duration-150 hover:shadow-md border-[#E5E7EB]',
           isGrid && 'text-xs',
           className
         )}>
           <CardContent className={cn(
             'p-3',
-            isGrid ? 'space-y-1' : 'space-y-2'
+            isGrid ? 'space-y-1.5' : 'space-y-2'
           )}>
             {/* Module */}
             <div className="flex items-center gap-2">
-              <BookOpen className={cn('shrink-0', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
+              <BookOpen className={cn('shrink-0 text-[#0992C2]', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
               <div className="min-w-0">
-                <p className={cn('font-semibold truncate', isGrid ? 'text-xs' : 'text-sm')}>
+                <p className={cn('font-semibold truncate text-[#0F172A]', isGrid ? 'text-xs' : 'text-sm')}>
                   {session.module_code}
                 </p>
                 {!isGrid && (
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-xs text-[#64748B] truncate">
                     {session.module_name}
                   </p>
                 )}
@@ -55,16 +55,16 @@ export function SessionCard({ session, variant = 'grid', className }: SessionCar
 
             {/* Time */}
             <div className="flex items-center gap-2">
-              <Clock className={cn('shrink-0', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
-              <span className={cn('text-muted-foreground', isGrid ? 'text-xs' : 'text-sm')}>
+              <Clock className={cn('shrink-0 text-[#64748B]', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
+              <span className={cn('text-[#64748B]', isGrid ? 'text-xs' : 'text-sm')}>
                 {session.display_time}
               </span>
             </div>
 
             {/* Room */}
             <div className="flex items-center gap-2">
-              <MapPin className={cn('shrink-0', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
-              <span className={cn('text-muted-foreground truncate', isGrid ? 'text-xs' : 'text-sm')}>
+              <MapPin className={cn('shrink-0 text-[#64748B]', isGrid ? 'h-3 w-3' : 'h-4 w-4')} />
+              <span className={cn('text-[#64748B] truncate', isGrid ? 'text-xs' : 'text-sm')}>
                 {session.room_code}
               </span>
             </div>
@@ -72,8 +72,8 @@ export function SessionCard({ session, variant = 'grid', className }: SessionCar
             {/* Lecturer (list view only) */}
             {!isGrid && (
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 shrink-0" />
-                <span className="text-sm text-muted-foreground truncate">
+                <User className="h-4 w-4 shrink-0 text-[#64748B]" />
+                <span className="text-sm text-[#64748B] truncate">
                   {session.lecturer_name}
                 </span>
               </div>
@@ -83,13 +83,13 @@ export function SessionCard({ session, variant = 'grid', className }: SessionCar
             <div className="flex justify-between items-center">
               <Badge 
                 variant="secondary" 
-                className={cn(isGrid ? 'text-xs px-1 py-0' : 'text-xs')}
+                className={cn(isGrid ? 'text-xs px-1.5 py-0.5' : 'text-xs')}
               >
                 {session.session_type_display}
               </Badge>
               
               {isGrid && session.duration_hours && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[#64748B] font-medium">
                   {session.duration_hours}h
                 </span>
               )}

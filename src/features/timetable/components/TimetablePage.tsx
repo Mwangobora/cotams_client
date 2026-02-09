@@ -62,10 +62,10 @@ export function TimetablePage() {
         className="space-y-6"
       >
         {/* Header */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Timetable</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Timetable</h1>
+            <p className="text-sm sm:text-base text-[#64748B] mt-1">
               {isAdmin && 'Manage and view all timetables'}
               {isLecturer && 'Your teaching schedule'}
               {isStudent && 'Your class schedule'}
@@ -79,19 +79,20 @@ export function TimetablePage() {
               onClick={() => refetch()}
               disabled={isLoading}
             >
-              <RefreshCcw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
-              Refresh
+              <RefreshCcw className={cn('h-4 w-4 sm:mr-2', isLoading && 'animate-spin')} />
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
 
             {/* Mobile filters trigger */}
             <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="lg:hidden">
-                  <Filter className="h-4 w-4" />
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80">
-                <SheetHeader>
+              <SheetContent side="right" className="w-full sm:w-[380px] overflow-y-auto">
+                <SheetHeader className="mb-4">
                   <SheetTitle>Timetable Filters</SheetTitle>
                   <SheetDescription>
                     Adjust the filters to customize your timetable view
@@ -119,9 +120,9 @@ export function TimetablePage() {
           </Alert>
         )}
 
-        <div className="flex gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_340px] gap-4 lg:gap-6">
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="min-w-0">
             {sessions.length === 0 ? (
               <EmptyState />
             ) : (
@@ -144,13 +145,13 @@ export function TimetablePage() {
           </div>
 
           {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block w-80">
+          <aside className="hidden lg:block">
             <TimetableFilters
               filters={filters}
               onFiltersChange={setFilters}
               userRoles={userRoles}
             />
-          </div>
+          </aside>
         </div>
       </motion.div>
     </PageContainer>
