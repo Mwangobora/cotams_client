@@ -58,11 +58,11 @@ export const API_ENDPOINTS = {
 
   // Accounts/Users
   accounts: {
-    users: '/accounts/users/',
-    userDetail: (id: string) => `/accounts/users/${id}/`,
-    lecturers: '/accounts/users/?role=LECTURER',
-    staff: '/accounts/users/?role=STAFF',
-    students: '/accounts/users/?role=STUDENT',
+    users: '/admin/users/',
+    userDetail: (id: string) => `/admin/users/${id}/`,
+    lecturers: '/admin/users/?role=LECTURER',
+    staff: '/admin/users/?role=STAFF',
+    students: '/admin/users/?role=STUDENT',
     profile: '/accounts/profile/',
     adminUsers: '/admin/users/',
     adminUserDetail: (id: string) => `/admin/users/${id}/`,

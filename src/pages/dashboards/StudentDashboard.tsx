@@ -26,8 +26,12 @@ export function StudentDashboard() {
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [selectedProgramYear, setSelectedProgramYear] = useState<string>('');
   const [selectedStream, setSelectedStream] = useState<string>('');
-  const [academicYear] = useState(`${currentYear}/${currentYear + 1}`);
+  const [academicYear, setAcademicYear] = useState(`${currentYear}/${currentYear + 1}`);
   const [semester] = useState('SEMESTER_1');
+
+  const academicYears = Array.from({ length: 5 }, (_, i) => currentYear + i - 2).map(
+    (year) => `${year}/${year + 1}`
+  );
 
   const programsApi = new ProgramsApi();
   const programYearsApi = new ProgramYearsApi();
@@ -97,7 +101,7 @@ export function StudentDashboard() {
             <CardTitle className="text-lg">Select Your Stream</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               <div className="space-y-2">
                 <Label>Program</Label>
                 <Select value={selectedProgram} onValueChange={(value) => {
@@ -155,6 +159,25 @@ export function StudentDashboard() {
                     {streams.map((stream: any) => (
                       <SelectItem key={stream.id} value={stream.id}>
                         {stream.stream_code} - {stream.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Academic Year</Label>
+                <Select
+                  value={academicYear}
+                  onValueChange={setAcademicYear}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select academic year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {academicYears.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -261,4 +284,3 @@ export function StudentDashboard() {
     </PageContainer>
   );
 }
-

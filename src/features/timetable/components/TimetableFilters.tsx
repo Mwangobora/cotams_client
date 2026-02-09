@@ -51,6 +51,9 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     () => localStorage.getItem('timetable_program_year') || '__all'
   );
 
+  const isUuid = (value: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
   // Save selections to localStorage
   useEffect(() => {
     if (selectedProgram !== '__all') {
@@ -104,6 +107,22 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
   const departmentFilter = selectedDepartment === '__all' ? '' : selectedDepartment;
   const programFilter = selectedProgram === '__all' ? '' : selectedProgram;
   const programYearFilter = selectedProgramYear === '__all' ? '' : selectedProgramYear;
+  const safeProgramFilter = programFilter && isUuid(programFilter) ? programFilter : '';
+  const safeProgramYearFilter = programYearFilter && isUuid(programYearFilter) ? programYearFilter : '';
+
+  useEffect(() => {
+    if (selectedProgram !== '__all' && !isUuid(selectedProgram)) {
+      setSelectedProgram('__all');
+      localStorage.removeItem('timetable_program');
+    }
+  }, [selectedProgram]);
+
+  useEffect(() => {
+    if (selectedProgramYear !== '__all' && !isUuid(selectedProgramYear)) {
+      setSelectedProgramYear('__all');
+      localStorage.removeItem('timetable_program_year');
+    }
+  }, [selectedProgramYear]);
 
   const { data: departmentsResponse } = useQuery({
     queryKey: ['departments'],
@@ -124,8 +143,8 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     : programsResponse?.results || [];
 
   const { data: programYearsResponse } = useQuery({
-    queryKey: ['program-years', programFilter],
-    queryFn: () => programYearsApi.getProgramYears(programFilter ? { program: programFilter } : {}),
+    queryKey: ['program-years', safeProgramFilter],
+    queryFn: () => programYearsApi.getProgramYears(safeProgramFilter ? { program: safeProgramFilter } : {}),
     enabled: isAuthenticated,
   });
   const programYears = Array.isArray(programYearsResponse)
@@ -133,9 +152,9 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     : programYearsResponse?.results || [];
 
   const { data: streamsResponse } = useQuery({
-    queryKey: ['streams', programYearFilter],
+    queryKey: ['streams', safeProgramYearFilter],
     queryFn: () =>
-      streamsApi.getStreams(programYearFilter ? { program_year: programYearFilter } : {}),
+      streamsApi.getStreams(safeProgramYearFilter ? { program_year: safeProgramYearFilter } : {}),
     enabled: isAuthenticated,
   });
   const streams = Array.isArray(streamsResponse)

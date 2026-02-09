@@ -88,7 +88,7 @@ export function LecturersPage() {
   });
 
   const { data: lecturersResponse, isLoading } = useQuery({
-    queryKey: ['lecturers', selectedDepartment, page, pageSize],
+    queryKey: ['department-lecturers', selectedDepartment],
     queryFn: () =>
       lecturersApi.getLecturers({
         department: selectedDepartment || undefined,
@@ -104,9 +104,7 @@ export function LecturersPage() {
   const lecturers = Array.isArray(lecturersResponse)
     ? lecturersResponse
     : lecturersResponse?.results || [];
-  const totalLecturers = Array.isArray(lecturersResponse)
-    ? lecturersResponse.length
-    : lecturersResponse?.count || 0;
+  const totalLecturers = lecturers.length;
 
   useEffect(() => {
     if (departmentId && !selectedDepartment) {
@@ -141,8 +139,7 @@ export function LecturersPage() {
       }),
     onSuccess: () => {
       toast.success('Lecturer created');
-      queryClient.invalidateQueries({ queryKey: ['lecturers'], exact: false });
-      queryClient.invalidateQueries({ queryKey: ['lecturers', selectedDepartment] });
+      queryClient.invalidateQueries({ queryKey: ['department-lecturers'], exact: false });
       setDialogOpen(false);
       setFormData({ ...defaultForm, department: formData.department });
     },
@@ -228,6 +225,7 @@ export function LecturersPage() {
           total: totalLecturers,
           onPageChange: setPage,
           onPageSizeChange: setPageSize,
+          mode: 'client',
         }}
       />
 

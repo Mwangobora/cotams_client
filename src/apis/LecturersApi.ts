@@ -28,25 +28,21 @@ export class LecturersApi {
       );
       
       // Transform the backend response to our frontend format
-      const results = response.data.results.map((lecturer: any) => ({
-        id: lecturer.id,
-        name: lecturer.user?.full_name || 
-              `${lecturer.user?.first_name || ''} ${lecturer.user?.last_name || ''}`.trim() || 
-              'Unknown',
-        email: lecturer.user?.email || '',
-        employee_id: lecturer.employee_id,
-        phone: lecturer.phone,
-        department: lecturer.department,
-        specialization: Array.isArray(lecturer.specialization) 
-          ? lecturer.specialization.join(', ') 
-          : lecturer.specialization || '',
-        qualification: lecturer.qualification,
-        bio: lecturer.bio,
-        office_location: lecturer.office_location,
-        research_interests: lecturer.research_interests,
-        is_active: lecturer.is_active,
-        courses: lecturer.courses || [],
-        schedule: lecturer.schedule || []
+      const results = response.data.results.map((user: any) => ({
+        id: user.lecturer_profile?.id || user.id,
+        name: user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown',
+        email: user.email || '',
+        employee_id: user.lecturer_profile?.employee_id || '',
+        phone: user.lecturer_profile?.phone_number || '',
+        department: user.lecturer_profile?.department || '',
+        specialization: user.lecturer_profile?.specialization || '',
+        qualification: user.lecturer_profile?.qualification || '',
+        bio: user.lecturer_profile?.bio || '',
+        office_location: user.lecturer_profile?.office_location || '',
+        research_interests: user.lecturer_profile?.research_interests || '',
+        is_active: user.is_active,
+        courses: [],
+        schedule: []
       }));
       return { results, count: response.data.count };
     } catch (error) {
