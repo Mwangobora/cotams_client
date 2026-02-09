@@ -62,24 +62,35 @@ export function useRealtimeNotifications() {
   useEffect(() => {
     if (!Cookies.get('access_token')) return;
     const wsClient = getWebSocketClient();
-    const showToast = (title?: string, message?: string) => {
+    const showToast = (title?: string, message?: string, eventType?: string) => {
       if (!title && !message) return;
-      toast(title || 'Notification', { description: message });
+      // Show success (green) for normal notifications, error (red) for clash/error events
+      const isError = eventType?.includes('clash') || eventType?.includes('error');
+      console.log(`🎨 Showing toast [${isError ? 'ERROR' : 'SUCCESS'}]:`, { title, message, eventType });
+      if (isError) {
+        toast.error(title || 'Error', { description: message });
+      } else {
+        toast.success(title || 'Notification', { description: message });
+      }
     };
     const onNotification = (msg: WSMessage) => {
-      showToast(msg.title, msg.message);
+      console.log('🔔 [useRealtimeNotifications] Notification received:', msg);
+      showToast(msg.title, msg.message, msg.event_type);
       queryClient.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
     };
     const onAnnouncement = (msg: WSMessage) => {
-      showToast(msg.title || 'Announcement', msg.message);
+      console.log('📢 [useRealtimeNotifications] Announcement received:', msg);
+      showToast(msg.title || 'Announcement', msg.message, 'announcement');
       queryClient.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
     };
     const onSystem = (msg: WSMessage) => {
-      showToast(msg.title || 'System', msg.message);
+      console.log('⚙️ [useRealtimeNotifications] System message received:', msg);
+      showToast(msg.title || 'System', msg.message, 'system');
     };
     wsClient.on('notification', onNotification);
     wsClient.on('announcement', onAnnouncement);
     wsClient.on('system', onSystem);
+    console.log('🔌 [useRealtimeNotifications] WebSocket handlers registered');
     wsClient.connect().catch(() => {
       console.warn('WebSocket connection failed, continuing without real-time updates');
     });
@@ -98,12 +109,21 @@ export function useRealtimeTimetableUpdates() {
     const wsClient = getWebSocketClient();
     const onNotification = (msg: WSMessage) => {
       const eventType = msg.event_type;
-      if (typeof eventType !== 'string' || !eventType.startsWith('timetable.')) return;
-      toast(msg.title || 'Timetable updated', { description: msg.message || 'A change was published.' });
+      console.log('📅 [useRealtimeTimetableUpdates] Message received:', { eventType, title: msg.title });
+      if (typeof eventType !== 'string' || !eventType.startsWith('timetable.')) {
+        console.log('   ↪️ Not a timetable event, skipping');
+        return;
+      }
+      console.log('   ✅ Timetable event detected! Showing toast and refetching data');
+      // Green toast for timetable updates (success)
+      toast.success(msg.title || 'Timetable updated', { 
+        description: msg.message || 'A change was published.'
+      });
       queryClient.invalidateQueries({ queryKey: ['timetable'] });
       queryClient.invalidateQueries({ queryKey: NOTIFICATION_KEYS.all });
     };
     wsClient.on('notification', onNotification);
+    console.log('🔌 [useRealtimeTimetableUpdates] WebSocket handler registered');
     wsClient.connect().catch(() => {
       console.warn('WebSocket connection failed, continuing without real-time updates');
     });

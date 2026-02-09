@@ -28,13 +28,15 @@ class WebSocketClient {
           this.isConnecting = false;
           this.reconnectAttempts = 0;
           this.reconnectDelay = 1000;
-          console.log('WebSocket connected');
+          console.log('✅ WebSocket connected successfully!');
+          console.log('   URL:', this.getUrl().split('?')[0]); // Hide token
           resolve();
         };
 
         this.ws.onmessage = (event) => {
           try {
             const message: WSMessage = JSON.parse(event.data);
+            console.log('📩 WebSocket Message Received:', message);
             this.handleMessage(message);
           } catch (error) {
             console.error('Error parsing WebSocket message:', error);
@@ -42,7 +44,7 @@ class WebSocketClient {
         };
         this.ws.onclose = (event) => {
           this.isConnecting = false;
-          console.log('WebSocket closed:', event.code, event.reason);
+          console.log('❌ WebSocket closed:', event.code, event.reason);
           if (this.shouldReconnect) {
             this.scheduleReconnect();
           }
@@ -75,14 +77,20 @@ class WebSocketClient {
     }, delay);
   }
   private handleMessage(message: WSMessage): void {
+    console.log(`🔔 Handling message type: ${message.type}`);
     const handlers = this.eventHandlers[message.type];
-    if (!handlers) return;
+    if (!handlers) {
+      console.warn(`⚠️ No handlers registered for message type: ${message.type}`);
+      return;
+    }
+    console.log(`✅ Found ${handlers.size} handler(s) for ${message.type}`);
     handlers.forEach((handler) => handler(message));
   }
 
   on(event: string, handler: Handler): void {
     if (!this.eventHandlers[event]) this.eventHandlers[event] = new Set();
     this.eventHandlers[event].add(handler);
+    console.log(`🎧 Registered handler for event: ${event}`);
   }
   off(event: string, handler?: Handler): void {
     if (!handler) {
