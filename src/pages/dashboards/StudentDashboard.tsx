@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { GraduationCap, Calendar, Clock, AlertCircle, BookOpen } from 'lucide-react';
-import { TimetableGrid } from '@/features/timetable/components/TimetableGrid';
+import { TimetableDayView, TimetableGrid } from '@/features/timetable/components';
 import { timetableApi } from '@/apis/TimetableApi';
 import { ProgramsApi } from '@/apis/ProgramsApi';
 import { ProgramYearsApi } from '@/apis/ProgramYearsApi';
@@ -22,12 +22,14 @@ import type { SessionsByDay, DayOfWeek } from '@/features/timetable/types';
 export function StudentDashboard() {
   const { user } = useAuthStore();
   const currentYear = new Date().getFullYear();
+  const todayCode = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][new Date().getDay()] as DayOfWeek;
   
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [selectedProgramYear, setSelectedProgramYear] = useState<string>('');
   const [selectedStream, setSelectedStream] = useState<string>('');
   const [academicYear, setAcademicYear] = useState(`${currentYear}/${currentYear + 1}`);
   const [semester] = useState('SEMESTER_1');
+  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(todayCode);
 
   const academicYears = Array.from({ length: 5 }, (_, i) => currentYear + i - 2).map(
     (year) => `${year}/${year + 1}`
@@ -82,8 +84,7 @@ export function StudentDashboard() {
   }, {} as SessionsByDay);
 
   // Get today's sessions
-  const today = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][new Date().getDay()] as DayOfWeek;
-  const todaySessions = sessionsByDay[today] || [];
+  const todaySessions = sessionsByDay[todayCode] || [];
 
   return (
     <PageContainer>
@@ -208,7 +209,7 @@ export function StudentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{todaySessions.length}</div>
-                <p className="text-xs text-muted-foreground">{today}</p>
+                <p className="text-xs text-muted-foreground">{todayCode}</p>
               </CardContent>
             </Card>
 
@@ -260,7 +261,7 @@ export function StudentDashboard() {
         ) : isLoading ? (
           <Card>
             <CardContent className="p-6">
-              <Skeleton className="h-[400px] w-full" />
+              <Skeleton className="h-100 w-full" />
             </CardContent>
           </Card>
         ) : sessions.length === 0 ? (
@@ -276,7 +277,16 @@ export function StudentDashboard() {
               <CardTitle>My Timetable - {semester === 'SEMESTER_1' ? 'Semester 1' : semester === 'SEMESTER_2' ? 'Semester 2' : 'Year Long'} {academicYear}</CardTitle>
             </CardHeader>
             <CardContent>
-              <TimetableGrid sessions={sessionsByDay} />
+              <div className="hidden lg:block">
+                <TimetableGrid sessions={sessionsByDay} />
+              </div>
+              <div className="lg:hidden">
+                <TimetableDayView
+                  sessions={sessionsByDay}
+                  selectedDay={selectedDay}
+                  onDayChange={setSelectedDay}
+                />
+              </div>
             </CardContent>
           </Card>
         )}

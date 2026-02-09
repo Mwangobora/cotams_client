@@ -22,9 +22,9 @@ export function TimetableGrid({ sessions }: TimetableGridProps) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="overflow-auto rounded-lg border bg-card"
+      className="overflow-x-auto overflow-y-hidden rounded-lg border bg-card"
     >
-      <div className="min-w-200">
+      <div className="min-w-[900px]">
         {/* Header */}
         <div className="grid grid-cols-8 border-b bg-muted/50">
           <div className="p-3 text-sm font-medium">Time</div>

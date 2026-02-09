@@ -22,7 +22,7 @@ export function AuthLayout({ children, title, subtitle, footer }: AuthLayoutProp
         style={{ backgroundImage: "url('/auth-bg.svg')" }}
         aria-hidden
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-100/70 to-zinc-300/40 dark:from-zinc-950/70 dark:to-zinc-900/40" />
+      <div className="absolute inset-0 bg-linear-to-br from-zinc-100/70 to-zinc-300/40 dark:from-zinc-950/70 dark:to-zinc-900/40" />
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}

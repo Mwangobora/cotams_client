@@ -58,7 +58,7 @@ export function NotificationsPage() {
             {!isLoading && notifications.length === 0 && (
               <p className="text-sm text-muted-foreground">No notifications found.</p>
             )}
-            {notifications.map((n) => (
+            {notifications.map((n:any) => (
               <button
                 key={n.id}
                 className="w-full text-left rounded-lg border p-4 hover:bg-muted/40 transition"

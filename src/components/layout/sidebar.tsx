@@ -53,7 +53,7 @@ export function Sidebar({ navigation, className }: SidebarProps) {
                       key={item.href}
                       variant={isActive ? 'default' : 'ghost'}
                       className={cn(
-                        'w-full justify-start gap-3 relative',
+                        'w-full justify-start gap-3 relative group',
                         isActive 
                           ? 'font-medium' 
                           : 'hover:bg-transparent'
@@ -68,7 +68,14 @@ export function Sidebar({ navigation, className }: SidebarProps) {
                       asChild
                     >
                       <Link to={item.href}>
-                        <item.icon className="h-4 w-4" style={{ color: isActive ? 'hsl(var(--sidebar-text))' : 'hsl(var(--icon-default))' }} />
+                        <item.icon
+                          className={cn(
+                            'h-4 w-4 transition-all duration-200',
+                            isActive 
+                              ? 'text-[hsl(var(--icon-active))] scale-110' 
+                              : 'text-[hsl(var(--icon-default))] group-hover:text-[hsl(var(--icon-active))] group-hover:scale-110'
+                          )}
+                        />
                         <span>{item.title}</span>
                         {item.badge !== undefined && item.badge > 0 && (
                           <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
@@ -88,7 +95,7 @@ export function Sidebar({ navigation, className }: SidebarProps) {
       {/* Footer */}
       <div className="border-t p-4" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
         <div className="text-xs text-center" style={{ color: 'hsl(var(--sidebar-text-muted))' }}>
-          v1.0.0
+          {new Date().getFullYear()} &copy; COTAMS. All rights reserved.
         </div>
       </div>
     </div>
