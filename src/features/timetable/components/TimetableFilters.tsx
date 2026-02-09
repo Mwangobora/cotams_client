@@ -186,14 +186,14 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
     <Card className="sticky top-4 overflow-hidden">
       <CardHeader className="pb-3 px-4 lg:px-6">
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <Filter className="h-4 w-4 text-[#0992C2]" />
+          <Filter className="h-4 w-4 text-primary" />
           Filters
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3.5 px-4 lg:px-6 pb-4 max-h-[calc(100vh-180px)] overflow-y-auto">
         {/* Academic Year - Always visible */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-[#0F172A]">Academic Year</Label>
+          <Label className="text-xs font-semibold">Academic Year</Label>
           <Select
             value={filters.academic_year || ''}
             onValueChange={(value) => updateFilter('academic_year', value)}
@@ -213,7 +213,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
 
         {/* Semester - Always visible */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-[#0F172A]">Semester</Label>
+          <Label className="text-xs font-semibold">Semester</Label>
           <Select value={filters.semester || ''} onValueChange={(value) => updateFilter('semester', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select semester" />
@@ -230,7 +230,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
         {showStreamSelectors && (
           <>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-[#0F172A]">Program</Label>
+              <Label className="text-xs font-semibold">Program</Label>
               <Select
                 value={selectedProgram}
                 onValueChange={(value) => {
@@ -254,7 +254,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-[#0F172A]">Program Year</Label>
+              <Label className="text-xs font-semibold">Program Year</Label>
               <Select
                 value={selectedProgramYear}
                 onValueChange={(value) => {
@@ -277,7 +277,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-[#0F172A]">Stream</Label>
+              <Label className="text-xs font-semibold">Stream</Label>
               <Select
                 value={filters.stream || '__all'}
                 onValueChange={(value) => updateFilter('stream', value)}
@@ -301,7 +301,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
         {/* Lecturer - Admin only */}
         {isAdmin && (
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-[#0F172A]">Lecturer</Label>
+            <Label className="text-xs font-semibold">Lecturer</Label>
             {loadingLecturers ? (
               <Skeleton className="h-10 w-full" />
             ) : (
@@ -325,7 +325,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
         {/* Room - Admin only */}
         {isAdmin && (
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-[#0F172A]">Room</Label>
+            <Label className="text-xs font-semibold">Room</Label>
             {loadingRooms ? (
               <Skeleton className="h-10 w-full" />
             ) : (
@@ -348,7 +348,7 @@ export function TimetableFilters({ filters, onFiltersChange, userRoles }: Timeta
 
         {/* Session Type */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-[#0F172A]">Session Type</Label>
+          <Label className="text-xs font-semibold">Session Type</Label>
           <Select value={filters.session_type || ''} onValueChange={(value) => updateFilter('session_type', value)}>
             <SelectTrigger>
               <SelectValue placeholder="All types" />

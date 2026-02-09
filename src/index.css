@@ -89,56 +89,60 @@
   }
 
   .dark {
-    /* Dark theme background: #30364F */
-    --background: 228 24% 25%;
-    --foreground: 0 0% 98%;
+    /* Dark theme - Professional academic design with strong contrast */
+    --background: 222 47% 5%;  /* #020617 - Main app background */
+    --foreground: 220 13% 91%;  /* #E5E7EB - Primary text */
     
-    /* Cards with slightly lighter zinc tone */
-    --card: 228 20% 30%;
-    --card-foreground: 0 0% 98%;
+    /* Cards: Slightly elevated surface */
+    --card: 222 47% 11%;  /* #0F172A - Card background */
+    --card-foreground: 220 13% 91%;  /* #E5E7EB - Text on cards */
     
-    --popover: 228 24% 25%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 222 47% 11%;  /* #0F172A */
+    --popover-foreground: 220 13% 91%;
     
-    /* Primary remains #0E21A0 but slightly adjusted for dark mode */
-    --primary: 229 88% 45%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary brand color: #0992C2 */
+    --primary: 195 94% 39%;  /* #0992C2 - Same as light theme */
+    --primary-foreground: 222 47% 5%;  /* Dark text on primary button */
     
-    --secondary: 228 20% 20%;
-    --secondary-foreground: 0 0% 98%;
+    /* Secondary elements */
+    --secondary: 215 25% 15%;  /* Dark background for secondary */
+    --secondary-foreground: 215 16% 65%;  /* #94A3B8 - Secondary text */
     
-    --muted: 228 20% 20%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted elements */
+    --muted: 215 25% 15%;
+    --muted-foreground: 215 16% 65%;  /* #94A3B8 */
     
-    --accent: 228 20% 35%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent for highlights: #0AC4E0 */
+    --accent: 188 92% 46%;  /* #0AC4E0 */
+    --accent-foreground: 222 47% 5%;  /* Dark text on accent */
     
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 13% 91%;
     
-    --border: 228 20% 35%;
-    --input: 228 20% 35%;
-    --ring: 229 88% 50%;
+    /* Borders: #1E293B */
+    --border: 217 33% 17%;  /* #1E293B */
+    --input: 217 33% 17%;
+    --ring: 188 92% 46%;  /* Accent color for focus rings */
     
     /* Sidebar colors for dark theme */
-    --sidebar-background: 228 24% 25%;
-    --sidebar-border: 228 20% 35%;
-    --sidebar-text: 0 0% 100%;  /* White text for dark theme */
-    --sidebar-text-hover: 0 0% 98%;
-    --sidebar-text-muted: 214 20% 69%;
-    --sidebar-active-bg: 228 20% 35%;
-    --sidebar-active-border: 0 0% 100%;  /* White active indicator */
+    --sidebar-background: 222 47% 5%;  /* #020617 */
+    --sidebar-border: 217 33% 17%;  /* #1E293B */
+    --sidebar-text: 215 16% 65%;  /* #94A3B8 - Muted default */
+    --sidebar-text-hover: 220 13% 91%;  /* #E5E7EB - Brighter on hover */
+    --sidebar-text-muted: 215 20% 40%;  /* Even more muted */
+    --sidebar-active-bg: 215 25% 12%;  /* Subtle background for active */
+    --sidebar-active-border: 195 94% 39%;  /* #0992C2 - Primary color indicator */
     
-    /* Icon hierarchy colors - same as light theme */
-    --icon-default: 229 70% 65%;  /* Lighter primary for dark background */
-    --icon-secondary: 229 60% 70%;  /* Even lighter for secondary */
-    --icon-active: 229 80% 70%;  /* Bright primary for active */
+    /* Icon hierarchy colors for dark theme */
+    --icon-default: 195 94% 39%;  /* #0992C2 - Primary color */
+    --icon-secondary: 195 70% 50%;  /* Lighter variant */
+    --icon-active: 188 92% 46%;  /* #0AC4E0 - Accent for active */
     
-    --chart-1: 229 88% 55%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 195 94% 39%;
+    --chart-2: 173 58% 45%;
+    --chart-3: 197 37% 30%;
+    --chart-4: 43 74% 60%;
+    --chart-5: 27 87% 60%;
   }
 }
 

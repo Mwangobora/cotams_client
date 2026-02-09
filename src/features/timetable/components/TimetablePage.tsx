@@ -64,8 +64,8 @@ export function TimetablePage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Timetable</h1>
-            <p className="text-sm sm:text-base text-[#64748B] mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold">Timetable</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               {isAdmin && 'Manage and view all timetables'}
               {isLecturer && 'Your teaching schedule'}
               {isStudent && 'Your class schedule'}
