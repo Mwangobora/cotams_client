@@ -2,8 +2,9 @@
  * Student Dashboard Page
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 import { useAuthStore } from '@/store/auth.store';
 import { PageContainer } from '@/components/layout/layout-primitives';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import { timetableApi } from '@/apis/TimetableApi';
 import { ProgramsApi } from '@/apis/ProgramsApi';
 import { ProgramYearsApi } from '@/apis/ProgramYearsApi';
 import { StreamsApi } from '@/apis/StreamsApi';
+import { getWebSocketClient } from '@/lib/ws';
 import type { SessionsByDay, DayOfWeek } from '@/features/timetable/types';
 
 export function StudentDashboard() {
@@ -27,7 +29,7 @@ export function StudentDashboard() {
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [selectedProgramYear, setSelectedProgramYear] = useState<string>('');
   const [selectedStream, setSelectedStream] = useState<string>('');
-  const [academicYear, setAcademicYear] = useState(`${currentYear}/${currentYear + 1}`);
+  const [academicYear, setAcademicYear] = useState('2025/2026');
   const [semester] = useState('SEMESTER_1');
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>(todayCode);
 
@@ -73,6 +75,20 @@ export function StudentDashboard() {
     },
     enabled: !!selectedStream,
   });
+
+  // Subscribe to stream updates over WebSocket to receive realtime notifications
+  useEffect(() => {
+    if (!selectedStream) return;
+    if (!Cookies.get('access_token')) return;
+    const wsClient = getWebSocketClient();
+    wsClient.connect().catch(() => {
+      // WebSocket is optional; fail silently
+    });
+    wsClient.send({ type: 'subscribe', group_type: 'stream', group_id: selectedStream });
+    return () => {
+      wsClient.send({ type: 'unsubscribe', group: `stream_${selectedStream}` });
+    };
+  }, [selectedStream]);
 
   // Group sessions by day
   const sessionsByDay: SessionsByDay = sessions.reduce((acc, session) => {
