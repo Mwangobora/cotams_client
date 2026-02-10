@@ -55,11 +55,18 @@ export function useSessionFormController({
       state.setClashError('');
     },
     onError: (error: any) => {
-      if (error.clash_details) {
+      if (error.type === 'CLASH_ERROR' && Array.isArray(error.conflicts)) {
+        const clashLabels: Record<string, string> = {
+          ROOM: '🏫 Room clash',
+          LECTURER: '👨‍🏫 Lecturer clash',
+          STREAM: '🎓 Stream clash',
+        };
+        const lines = error.conflicts.map((c: any) => {
+          const label = clashLabels[c.type] || c.type;
+          return `${label}: ${c.module_code} in ${c.resource_name} (${c.start_time}–${c.end_time})`;
+        });
         state.setClashError(
-          `Time clash detected: ${error.clash_details.conflicting_sessions
-            .map((s: any) => `${s.module_name} (${s.start_time}-${s.end_time})`)
-            .join(', ')}`
+          `Scheduling clash detected:\n${lines.join('\n')}`
         );
       } else {
         toast.error(`Error: ${error.message}`);

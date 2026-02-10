@@ -65,19 +65,14 @@ export interface ClashError {
 }
 
 export interface ClashConflict {
-  conflict_type: 'ROOM' | 'LECTURER' | 'STREAM';
-  conflicting_session: {
-    id: string;
-    module_name: string;
-    module_code: string;
-    room_name?: string;
-    lecturer_name?: string;
-    stream_name?: string;
-    day_of_week: DayOfWeek;
-    start_time: string;
-    end_time: string;
-    display_time: string;
-  };
+  type: 'ROOM' | 'LECTURER' | 'STREAM';
+  conflicting_session_id: string;
+  resource_id: string;
+  resource_name: string;
+  day: string;
+  start_time: string;
+  end_time: string;
+  module_code: string;
 }
 
 export type DayOfWeek = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';

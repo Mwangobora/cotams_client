@@ -67,7 +67,7 @@ export function SessionFormDialogView({
           <div className="space-y-4 py-4">
             {clashError && (
               <Alert variant="destructive">
-                <AlertDescription>{clashError}</AlertDescription>
+                <AlertDescription className="whitespace-pre-line">{clashError}</AlertDescription>
               </Alert>
             )}
             <ProgramStreamSelector
