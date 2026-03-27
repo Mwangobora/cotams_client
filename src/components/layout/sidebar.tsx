@@ -24,7 +24,7 @@ export function Sidebar({ navigation, className }: SidebarProps) {
   };
 
   return (
-    <div className={cn('flex h-full flex-col border-r', className)} style={{ backgroundColor: 'hsl(var(--sidebar-background))', borderColor: 'hsl(var(--sidebar-border))' }}>
+    <div className={cn('flex h-full flex-col border-r', className)} style={{ backgroundColor: 'hsl(var(--sidebar-background))', borderColor: 'hsl(var(--sidebar-border))', color: 'hsl(var(--sidebar-text))' }}>
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6" style={{ borderColor: 'hsl(var(--sidebar-border))' }}>
         <Link to={getDashboardPath()} className="flex items-center gap-2 font-semibold">
